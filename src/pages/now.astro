@@ -1,0 +1,75 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout title="Becoming — Now" description="What Vivek Maswadkar is building, learning, and aiming toward now.">
+  <PageIntro
+    number="03"
+    chapter="Becoming / Now"
+    title="The current chapter is about useful AI in the real world."
+    description="Building products, evaluating systems, and sharing the lessons while they are still fresh."
+  />
+
+  <section class="split-feature split-feature--now">
+    <div class="split-feature__image" data-reveal>
+      <img src="/images/dossier/project-grid.webp" alt="Abstract ultramarine field, black block, and dot matrix on textured ivory paper" width="1536" height="1024" />
+    </div>
+    <div class="split-feature__content" data-reveal>
+      <p class="chapter-label">Current focus</p>
+      <h2>Products with purpose. Systems with evidence.</h2>
+      <p>
+        Most of my attention sits where applied AI meets domain knowledge: agricultural support, regulated classification,
+        agentic workflows, quality engineering, and the hard work between a prototype and a dependable product.
+      </p>
+      <ul class="focus-list">
+        {profile.currentFocus.map((item) => <li><Icon name="ph:arrow-right" aria-hidden="true" /><span>{item}</span></li>)}
+      </ul>
+      <p class="quiet-note">Last meaningfully updated: July 2026.</p>
+    </div>
+  </section>
+
+  <section class="now-milestones">
+    <header data-reveal>
+      <p class="eyebrow">Recent markers</p>
+      <h2>Proof that the direction is moving.</h2>
+    </header>
+    <div class="milestone-grid">
+      <a href="https://play.google.com/store/apps/details?id=com.maswadkar.developers.androidify" target="_blank" rel="noopener noreferrer" data-reveal>
+        <span>01</span>
+        <h3>10K+ Krishi AI downloads</h3>
+        <p>The Android product passed 10,000 public downloads on Google Play.</p>
+        <Icon name="ph:arrow-up-right" aria-hidden="true" />
+      </a>
+      <a href="https://www.linkedin.com/posts/maswadkar_krishiai-googlecloud-googleforstartups-activity-7467224706547634177-yha-" target="_blank" rel="noopener noreferrer" data-reveal>
+        <span>02</span>
+        <h3>Google for Startups</h3>
+        <p>Krishi AI was accepted into the Google for Startups Cloud Program.</p>
+        <Icon name="ph:arrow-up-right" aria-hidden="true" />
+      </a>
+      <a href="https://www.linkedin.com/posts/maswadkar_krishiai-headwayearth-agritech-activity-7475401070333116417-Nq9W" target="_blank" rel="noopener noreferrer" data-reveal>
+        <span>03</span>
+        <h3>A new geography</h3>
+        <p>A partnership with Headway Earth is extending Krishi AI’s AgriTech services to customers in Nepal.</p>
+        <Icon name="ph:arrow-up-right" aria-hidden="true" />
+      </a>
+      <a href="https://www.youtube.com/watch?v=ZUhdLFDr-vE" target="_blank" rel="noopener noreferrer" data-reveal>
+        <span>04</span>
+        <h3>From fields to AI</h3>
+        <p>A first public talk shared the product journey and the lessons from building with LLM tools.</p>
+        <Icon name="ph:arrow-up-right" aria-hidden="true" />
+      </a>
+    </div>
+  </section>
+
+  <section class="text-band text-band--cream" data-reveal>
+    <p class="eyebrow">Next horizon</p>
+    <h2>What I want the work to become.</h2>
+    <ul class="aspiration-list">
+      {profile.aspirations.map((item) => <li>{item}</li>)}
+    </ul>
+    <a class="button button--ink" href="/contact/">Talk about what comes next <Icon name="ph:arrow-right" aria-hidden="true" /></a>
+  </section>
+</BaseLayout>

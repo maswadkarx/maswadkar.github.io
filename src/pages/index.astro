@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import { profile } from '../data/profile';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
+);
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
+);
+
+const projectOrder = ['krishi-ai', 'agentic-test-case-generator', 'deep-research-agent'];
+const featuredProjects = projectOrder
+  .map((id) => projects.find((project) => project.id === id))
+  .filter((project) => project !== undefined);
+const latestPosts = posts.slice(0, 3);
+const formatDate = (date: string) => new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short' }).format(new Date(`${date}T00:00:00`));
+const heroFocus = [
+  'Building Krishi AI as a practical, multilingual farming companion.',
+  'Designing evidence-grounded agentic systems with human review.',
+  'Teaching practical generative AI through open source, writing, and video.',
+];
+---
+
+<BaseLayout compactFooter={true}>
+  <section class="dossier-hero">
+    <div class="dossier-hero__inner">
+      <div class="dossier-hero__copy" data-reveal data-visible="true">
+        <p class="eyebrow">The living dossier</p>
+        <h1>I build useful<br class="hero-line-break" /> <span class="nowrap">AI systems—</span><br class="hero-line-break" /> and share the<br class="hero-line-break" /> thinking behind<br class="hero-line-break" /> them.</h1>
+        <p class="dossier-hero__intro">
+          I’m {profile.name}—an AI/ML engineer and product builder working across software and cloud. I build, write,
+          and share to make complex ideas useful in the real world.
+        </p>
+        <div class="dossier-hero__actions">
+          <a class="button button--primary" href="/work/">Explore my work <Icon name="ph:arrow-right" aria-hidden="true" /></a>
+          <a class="text-action" href="/contact/">Start a conversation <Icon name="ph:arrow-up-right" aria-hidden="true" /></a>
+        </div>
+      </div>
+
+      <div class="dossier-hero__art" data-reveal>
+        <img src="/images/dossier/hero-geometric.webp" alt="Abstract ultramarine and black geometric print on textured ivory paper" width="1536" height="1536" />
+        <p class="margin-note margin-note--left">Systems<br />over<br />spin.</p>
+        <p class="margin-note margin-note--right">Useful<br />today.<br />Better<br />tomorrow.</p>
+      </div>
+
+      <aside class="dossier-now" data-reveal>
+        <p class="eyebrow">Now</p>
+        <ul>
+          {heroFocus.map((item) => <li>{item}</li>)}
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="home-editorial">
+    <div class="home-editorial__work">
+      <header class="section-rule" data-reveal>
+        <p class="eyebrow">Featured work</p>
+        <span></span>
+      </header>
+      <div class="featured-work-list">
+        {featuredProjects.map((project, index) => (
+          <article class="featured-work" data-reveal>
+            <p class="featured-work__number">{String(index + 1).padStart(2, '0')}</p>
+            <div class="featured-work__copy">
+              <h2><a href={`/work/${project.id}/`}>{project.data.title}</a></h2>
+              <p>{project.data.description}</p>
+              <ArrowLink href={`/work/${project.id}/`} label="View project" />
+            </div>
+            {project.data.cover && (
+              <a class="featured-work__image" href={`/work/${project.id}/`} aria-label={`View ${project.data.title}`}>
+                <img src={project.data.cover} alt={project.data.coverAlt ?? ''} width="1536" height="1024" loading="lazy" />
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+      <ArrowLink href="/work/" label="View all work" class="archive-link" />
+    </div>
+
+    <aside class="home-editorial__writing">
+      <header class="section-rule" data-reveal>
+        <p class="eyebrow">Latest notes / essays</p>
+      </header>
+      <div class="latest-writing-list">
+        {latestPosts.map((post) => (
+          <article data-reveal>
+            <time datetime={post.data.publishedAt}>{formatDate(post.data.publishedAt)}</time>
+            <h2><a href={`/writing/${post.id}/`}>{post.data.title}</a></h2>
+            <p>{post.data.description}</p>
+            <ArrowLink href={`/writing/${post.id}/`} label="Read essay" />
+          </article>
+        ))}
+      </div>
+      <ArrowLink href="/writing/" label="View all writing" class="archive-link" />
+    </aside>
+  </section>
+
+  <section class="online-strip" data-reveal>
+    <div class="section-rule">
+      <p class="eyebrow">Find me online</p>
+      <span></span>
+    </div>
+    <div class="online-strip__grid">
+      <a href="/resume/">
+        <Icon name="ph:file-text" aria-hidden="true" />
+        <strong>Résumé</strong>
+        <small>Open résumé <Icon name="ph:arrow-right" aria-hidden="true" /></small>
+      </a>
+      {profile.social.map((item) => (
+        <a href={item.href} target="_blank" rel="me noopener noreferrer">
+          <Icon name={item.icon} aria-hidden="true" />
+          <strong>{item.label}</strong>
+          <small>{item.description} <Icon name="ph:arrow-up-right" aria-hidden="true" /></small>
+        </a>
+      ))}
+      <div class="working-principle">
+        <Icon name="ph:asterisk" aria-hidden="true" />
+        <p><span>Working principle</span>Build with clarity.<br />Share with purpose.<br />Create quiet impact.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="beyond-work">
+    <div class="beyond-work__intro" data-reveal>
+      <p class="eyebrow">Beyond work</p>
+      <h2>Curious by nature.<br />Builder at heart.</h2>
+      <p>Outside the screen, I recharge through ideas, observation, and places that expand the mind.</p>
+      <ArrowLink href="/about/" label="More about me" />
+    </div>
+    <div class="beyond-work__grid">
+      <article data-reveal>
+        <img src="/images/dossier/reading-ideas.webp" alt="Expressive black brush marks on ivory paper" width="1024" height="1024" loading="lazy" />
+        <h3>Reading & ideas</h3>
+        <p>Books, essays, and notes that shape how I think.</p>
+      </article>
+      <article data-reveal>
+        <img src="/images/dossier/writing-pen.webp" alt="Black fountain pen on a pale editorial surface" width="1024" height="1024" loading="lazy" />
+        <h3>Writing</h3>
+        <p>Turning ideas into words to learn and to share.</p>
+      </article>
+      <article data-reveal>
+        <img src="/images/dossier/photography-camera.webp" alt="Vintage analog camera in monochrome light" width="1024" height="1024" loading="lazy" />
+        <h3>Photography</h3>
+        <p>Finding patterns, light, and perspective.</p>
+      </article>
+      <article data-reveal>
+        <img src="/images/dossier/exploration-water.webp" alt="A small figure in an expansive ultramarine landscape" width="1024" height="1024" loading="lazy" />
+        <h3>Exploration</h3>
+        <p>New places, new questions, new lenses.</p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

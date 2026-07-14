@@ -1,0 +1,46 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { profile } from '../data/profile';
+
+const linkedIn = profile.social.find((item) => item.label === 'LinkedIn');
+---
+
+<BaseLayout title="Connecting — Contact" description="Start a conversation with Vivek Maswadkar.">
+  <PageIntro
+    number="05"
+    chapter="Connecting / Contact"
+    title="A useful conversation is a good place to begin."
+    description="For projects, collaboration, opportunities, or a thoughtful exchange of ideas, use the clearest public channel below."
+  />
+  <section class="contact-grid">
+    <div class="contact-grid__intro" data-reveal>
+      <p class="chapter-label">Start here</p>
+      <h2>{profile.email ? 'Send a note.' : 'Start where the context fits.'}</h2>
+      <p>
+        {profile.email
+          ? 'A short note with context is enough. Include what you are exploring and why it may be useful to talk.'
+          : 'LinkedIn is currently the clearest place for professional conversations. GitHub is best for code and project feedback; YouTube for questions about a tutorial or talk.'}
+      </p>
+      {profile.email && (
+        <a class="button button--ink" href={`mailto:${profile.email}`}>Write an email <Icon name="ph:arrow-up-right" aria-hidden="true" /></a>
+      )}
+      {!profile.email && linkedIn && (
+        <a class="button button--ink" href={linkedIn.href} target="_blank" rel="noopener noreferrer">Start on LinkedIn <Icon name="ph:arrow-up-right" aria-hidden="true" /></a>
+      )}
+      {profile.bookingUrl && (
+        <a class="button button--outline-dark" href={profile.bookingUrl} target="_blank" rel="noopener noreferrer">Book a conversation <Icon name="ph:calendar" aria-hidden="true" /></a>
+      )}
+    </div>
+    <div class="contact-channels" data-reveal>
+      {profile.social.map((item) => (
+        <a href={item.href} target="_blank" rel="me noopener noreferrer">
+          <Icon name={item.icon} aria-hidden="true" />
+          <span><strong>{item.label}</strong><small>{item.description}</small></span>
+          <Icon name="ph:arrow-up-right" aria-hidden="true" />
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

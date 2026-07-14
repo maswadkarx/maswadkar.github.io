@@ -1,0 +1,26 @@
+---
+title: "EAN Extraction System"
+description: "A multi-stage computer-vision pipeline for extracting product barcodes with local decoding, Gemini fallback, and human review."
+publishedAt: "2025-12-03"
+updatedAt: "2025-12-19"
+featured: false
+draft: false
+cover: "/images/dossier/hero-geometric.webp"
+coverAlt: "Abstract ultramarine and black geometric print on textured ivory paper"
+tags: ["Computer vision", "Azure", "Gemini", "Human-in-the-loop"]
+role: "Creator and developer"
+status: "Complete"
+sourceUrl: "https://github.com/lumensparkxy/EAN-numbers-vision"
+---
+
+This system processes product images to extract EAN and UPC barcodes through a staged, cost-aware workflow.
+
+## A layered approach
+
+Images are normalized and enhanced before fast local decoding with ZBar or ZXing. Difficult cases fall back to Gemini, while ambiguous or failed results move into a manual-review interface. The system supports EAN-13, EAN-8, UPC-A, and UPC-E formats.
+
+Azure Blob Storage holds the image workflow, Cosmos DB with the MongoDB API tracks processing state, and background workers handle preprocessing, primary decoding, fallback, retries, and reports.
+
+## Why the architecture matters
+
+The design avoids sending every image to a generative model. Deterministic local tools get the first attempt, AI is reserved for cases that need it, and humans remain available for uncertainty. That pattern—use the least expensive reliable method and preserve a review path—applies well beyond barcodes.

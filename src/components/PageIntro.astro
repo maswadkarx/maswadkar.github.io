@@ -1,0 +1,18 @@
+---
+interface Props {
+  chapter: string;
+  number: string;
+  title: string;
+  description: string;
+}
+
+const { chapter, number, title, description } = Astro.props;
+---
+
+<section class="page-intro">
+  <div class="page-intro__inner" data-reveal>
+    <p class="eyebrow"><span>{number}</span> {chapter}</p>
+    <h1>{title}</h1>
+    <p class="page-intro__description">{description}</p>
+  </div>
+</section>

@@ -1,0 +1,109 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout title="Résumé" description="The professional experience, skills, education, and credentials of Vivek Maswadkar.">
+  <PageIntro
+    number="R"
+    chapter="Résumé"
+    title="Twenty years of making complex technology more dependable."
+    description="AI and machine learning, product building, quality engineering, programme delivery, and the experience connecting them."
+  />
+
+  <section class="resume-shell">
+    <aside class="resume-sidebar" data-reveal>
+      <p class="chapter-label">Profile</p>
+      <h2>{profile.name}</h2>
+      <p>{profile.title}</p>
+      <p class="resume-location"><Icon name="ph:map-pin" aria-hidden="true" /> {profile.location}</p>
+      <div class="resume-links">
+        {profile.resumePdf && (
+          <a href={profile.resumePdf} download><Icon name="ph:download-simple" aria-hidden="true" /> Download PDF</a>
+        )}
+        {profile.social.map((item) => (
+          <a href={item.href} target="_blank" rel="me noopener noreferrer"><Icon name={item.icon} aria-hidden="true" /> {item.label}</a>
+        ))}
+      </div>
+    </aside>
+
+    <div class="resume-content" data-reveal>
+      <section>
+        <p class="eyebrow">Professional summary</p>
+        <h2>Reliable systems, useful products, visible evidence.</h2>
+        <p class="resume-lede">{profile.professionalSummary}</p>
+      </section>
+
+      <section>
+        <p class="eyebrow">Experience</p>
+        <div class="experience-list">
+          {profile.experience.map((item) => (
+            <article>
+              <div>
+                <p>{item.period}</p>
+              </div>
+              <div>
+                <h3>{item.role}</h3>
+                <p class="experience-list__organisation">{item.organisation}</p>
+                <p>{item.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Capabilities</p>
+        <div class="skills-grid">
+          {profile.skills.map((skill) => (
+            <article>
+              <h3>{skill.group}</h3>
+              <ul>{skill.items.map((item) => <li>{item}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Education</p>
+        <div class="resume-records">
+          {profile.education.map((item) => (
+            <article>
+              <h3>{item.qualification}</h3>
+              <p>{item.institution}</p>
+              <p>{item.period}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Selected credentials</p>
+        <div class="credential-list">
+          {profile.credentials.map((item) => (
+            <article>
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.issuer}{item.year ? ` · ${item.year}` : ''}</p>
+              </div>
+              {item.href && (
+                <a href={item.href} target="_blank" rel="noopener noreferrer" aria-label={`Verify ${item.title}`}>
+                  <Icon name="ph:arrow-up-right" aria-hidden="true" />
+                </a>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Languages</p>
+        <ul class="language-list">
+          {profile.languages.map((language) => <li>{language}</li>)}
+        </ul>
+      </section>
+    </div>
+  </section>
+</BaseLayout>

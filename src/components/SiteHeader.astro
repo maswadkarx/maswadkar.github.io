@@ -1,0 +1,57 @@
+---
+import { Icon } from 'astro-icon/components';
+import { profile } from '../data/profile';
+
+const path = Astro.url.pathname;
+const navItems = [
+  { label: 'Work', href: '/work/' },
+  { label: 'Writing', href: '/writing/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Now', href: '/now/' },
+  { label: 'Resume', href: '/resume/' },
+  { label: 'Contact', href: '/contact/' },
+];
+const updated = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  .format(new Date(`${profile.updatedAt}T00:00:00`))
+  .replace(/ /g, ' ')
+  .toUpperCase();
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="wordmark" href="/" aria-label={`${profile.name}, home`}>
+      <span class="wordmark__monogram" aria-hidden="true">VM</span>
+      <span>{profile.name}</span>
+    </a>
+
+    <nav class="chapter-navigation" aria-label="Primary navigation">
+      {navItems.map((item) => (
+        <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>
+      ))}
+    </nav>
+
+    <p class="site-header__date">{updated}</p>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-label="Open navigation"
+      aria-controls="mobile-navigation"
+      aria-expanded="false"
+      data-menu-toggle
+    >
+      <Icon class="menu-toggle__open" name="ph:list" aria-hidden="true" />
+      <Icon class="menu-toggle__close" name="ph:x" aria-hidden="true" />
+    </button>
+  </div>
+
+  <nav id="mobile-navigation" class="mobile-navigation" aria-label="Mobile navigation" data-mobile-menu hidden>
+    {navItems.map((item, index) => (
+      <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+        <span>{String(index + 1).padStart(2, '0')}</span>
+        <strong>{item.label}</strong>
+        <Icon name="ph:arrow-up-right" aria-hidden="true" />
+      </a>
+    ))}
+  </nav>
+</header>

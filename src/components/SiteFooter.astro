@@ -1,0 +1,33 @@
+---
+import { Icon } from 'astro-icon/components';
+import { profile } from '../data/profile';
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<footer id="site-footer" class:list={['site-footer', { 'site-footer--compact': compact }]}>
+  {!compact && (
+    <div class="site-footer__socials" aria-label="Public profiles">
+      <p class="eyebrow">Continue elsewhere</p>
+      <div>
+        {profile.social.map((item) => (
+          <a href={item.href} target="_blank" rel="me noopener noreferrer">
+            <Icon name={item.icon} aria-hidden="true" />
+            <span>{item.label}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+  <div class="site-footer__base">
+    <Icon name="ph:asterisk" aria-hidden="true" />
+    <p>Thanks for being here. If something resonates, I’d love to connect.</p>
+    <span aria-hidden="true"></span>
+    <a href="/contact/">Let’s start a conversation <Icon name="ph:arrow-right" aria-hidden="true" /></a>
+  </div>
+  <p class="site-footer__legal">© {new Date().getFullYear()} {profile.name}</p>
+</footer>

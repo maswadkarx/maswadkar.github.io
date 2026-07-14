@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
+);
+---
+
+<BaseLayout title="Making — Work" description="Projects and case studies by Vivek Maswadkar.">
+  <PageIntro
+    number="01"
+    chapter="Making / Work"
+    title="Work with enough context to matter."
+    description="Projects are more useful when the decisions, constraints, and lessons are visible alongside the result."
+  />
+  <section class="archive-section">
+    <div class="archive-list">
+      {projects.map((project, index) => (
+        <article class="archive-item" data-reveal>
+          <a class="archive-item__image" href={`/work/${project.id}/`} aria-label={`Read ${project.data.title}`}>
+            {project.data.cover && (
+              <img src={project.data.cover} alt={project.data.coverAlt ?? ''} width="1536" height="1024" loading="lazy" />
+            )}
+          </a>
+          <div class="archive-item__number">{String(index + 1).padStart(2, '0')}</div>
+          <div class="archive-item__content">
+            <p class="chapter-label">{project.data.status ?? 'Project'}</p>
+            <h2><a href={`/work/${project.id}/`}>{project.data.title}</a></h2>
+            <p>{project.data.description}</p>
+            <div class="tag-list">{project.data.tags.map((tag) => <span>{tag}</span>)}</div>
+          </div>
+          <a class="archive-item__arrow" href={`/work/${project.id}/`} aria-label={`Read ${project.data.title}`}>
+            <Icon name="ph:arrow-up-right" aria-hidden="true" />
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

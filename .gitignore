@@ -84,6 +84,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+.astro/
 
 # Gatsby files
 .cache/
@@ -114,3 +115,18 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Local design-generation sources and intermediate QA captures
+public/images/dossier/*.png
+public/images/editorial/
+docs/design/generated-assets-contact-sheet.png
+docs/design/option-3-source.png
+docs/design/reference-crops/
+docs/design/qa/*
+!docs/design/qa/comparison-design1-full.png
+!docs/design/qa/comparison-design1-hero.png
+!docs/design/qa/design-1-home-desktop.png
+!docs/design/qa/design-1-home-mobile.png
+!docs/design/qa/design-1-mobile-menu.png
+!docs/design/qa/lighthouse-desktop.json
+!docs/design/qa/lighthouse-mobile.json

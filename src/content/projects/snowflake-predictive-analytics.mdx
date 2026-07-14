@@ -1,0 +1,24 @@
+---
+title: "Snowflake Predictive Analytics Agent"
+description: "A portable analytics system for forecasting Snowflake usage, surfacing cost signals, and monitoring results without external service dependencies."
+publishedAt: "2025-07-14"
+updatedAt: "2025-08-06"
+featured: false
+draft: false
+cover: "/images/dossier/project-orbit.webp"
+coverAlt: "Abstract ultramarine half-circle and modular black grid on textured ivory paper"
+tags: ["Predictive analytics", "Snowflake", "FastAPI", "Cost monitoring"]
+role: "Creator and developer"
+status: "Complete"
+sourceUrl: "https://github.com/lumensparkxy/predictive_analysis_agent"
+---
+
+The Snowflake Predictive Analytics Agent is a self-contained Python system for usage forecasting and cost optimisation.
+
+## Portable by design
+
+The application uses SQLite, JSON, Parquet, and a file-based cache rather than requiring additional hosted services. It collects Snowflake data, processes it with pandas and NumPy, trains scikit-learn models, and presents forecasts, monitoring, alerts, and reports through a FastAPI-backed interface.
+
+## What the project tests
+
+Analytics tooling is easier to adopt when its operational footprint is small. This project explores how far a useful monitoring and forecasting workflow can go with a one-command setup, explicit local storage, and a conventional Python test and linting toolchain.

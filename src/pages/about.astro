@@ -1,0 +1,76 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout title="Living — About" description="The roots, values, and journey behind Vivek Maswadkar’s work in AI and technology.">
+  <PageIntro
+    number="04"
+    chapter="Living / About"
+    title="The work makes more sense when you know where it comes from."
+    description="Farming roots, a teacher’s influence, two decades in technology, and a continuing habit of learning by building."
+  />
+
+  <section class="split-feature split-feature--about">
+    <div class="split-feature__content" data-reveal>
+      <p class="chapter-label">The throughline</p>
+      <h2>Farming. Education. Technology.</h2>
+      <p>{profile.originStory}</p>
+      <p>{profile.professionalSummary}</p>
+      <a class="arrow-link" href="/resume/">
+        <span>Read the professional timeline</span><Icon name="ph:arrow-right" aria-hidden="true" />
+      </a>
+    </div>
+    <div class="split-feature__image" data-reveal>
+      <img src="/images/dossier/hero-geometric.webp" alt="Abstract ultramarine and black geometric print on textured ivory paper" width="1536" height="1536" />
+    </div>
+  </section>
+
+  <section class="about-truth" data-reveal>
+    <div>
+      <p class="eyebrow">A path shaped by range</p>
+      <h2>From quality and delivery to AI products.</h2>
+      <p>
+        My professional journey moved through test management, programme and release leadership, cloud and data systems,
+        machine learning, and now LLM-based product development. The roles changed; the interest in making complex systems
+        dependable did not.
+      </p>
+    </div>
+    <dl>
+      <div><dt>Roots</dt><dd>Vidarbha, Maharashtra — raised in a farming family.</dd></div>
+      <div><dt>Home now</dt><dd>{profile.location}</dd></div>
+      <div><dt>Current work</dt><dd>AI/ML engineering, agentic systems, NLP classification, and independent product development.</dd></div>
+      <div><dt>Independent mission</dt><dd>Krishi AI — practical, multilingual agricultural support for farmers.</dd></div>
+      <div><dt>Teaching</dt><dd>Open source, writing, talks, and Generative AI for the Beginner’s Mind.</dd></div>
+    </dl>
+  </section>
+
+  <section class="interest-section">
+    <header data-reveal>
+      <p class="eyebrow">What keeps pulling me forward</p>
+      <h2>Interests with a purpose.</h2>
+    </header>
+    <div class="interest-grid">
+      {profile.interests.map((interest) => (
+        <article data-reveal>
+          <img src={interest.image} alt={interest.imageAlt} width="1536" height="1024" loading="lazy" />
+          <div>
+            <h3>{interest.title}</h3>
+            <p>{interest.description}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="text-band text-band--plum" data-reveal>
+    <p class="eyebrow">Operating principles</p>
+    <h2>Simple ideas I want the work to remember.</h2>
+    <ul class="principle-list">
+      {profile.principles.map((principle) => <li>{principle}</li>)}
+    </ul>
+    <a class="button button--coral" href="/contact/">Start a conversation <Icon name="ph:arrow-right" aria-hidden="true" /></a>
+  </section>
+</BaseLayout>
