@@ -3,14 +3,20 @@ import { getCollection } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageIntro from '../../components/PageIntro.astro';
+import { latestDate } from '../../lib/seo';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
 );
 const formatter = new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short', year: 'numeric' });
+const lastModified = latestDate(posts.map((post) => post.data.updatedAt ?? post.data.publishedAt));
 ---
 
-<BaseLayout title="Thinking — Writing" description="Notes and essays by Vivek Maswadkar.">
+<BaseLayout
+  title="AI Engineering & Product Writing — Vivek Maswadkar"
+  description="First-party essays by Vivek Maswadkar about AI engineering, AI-assisted coding, product judgment, responsible systems, and the economics of LLMs."
+  modifiedAt={lastModified}
+>
   <PageIntro
     number="02"
     chapter="Thinking / Writing"

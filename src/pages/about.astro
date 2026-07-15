@@ -3,9 +3,15 @@ import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
 import { profile } from '../data/profile';
+import { aboutSchema } from '../lib/seo';
 ---
 
-<BaseLayout title="Living — About" description="The roots, values, and journey behind Vivek Maswadkar’s work in AI and technology.">
+<BaseLayout
+  title="Living — About"
+  description="The roots, values, and journey behind Vivek Maswadkar’s work in AI and technology."
+  modifiedAt={profile.updatedAt}
+  schema={aboutSchema()}
+>
   <PageIntro
     number="04"
     chapter="Living / About"

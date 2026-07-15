@@ -2,8 +2,8 @@
 title: "Deep Research Agent"
 description: "A Gemini-powered decision-support system that turns a question into staged research, evidence assessment, and an actionable report."
 publishedAt: "2025-06-28"
-updatedAt: "2025-11-19"
-featured: false
+updatedAt: "2026-07-15"
+featured: true
 draft: false
 cover: "/images/dossier/project-grid.webp"
 coverAlt: "Abstract ultramarine field, black block, and dot matrix on textured ivory paper"
@@ -13,14 +13,26 @@ status: "Complete"
 sourceUrl: "https://github.com/lumensparkxy/ai-deep-research-agent"
 ---
 
-The Deep Research Agent explores how an AI system can support decisions without collapsing research into a single prompt and answer.
+The Deep Research Agent is a Python decision-support prototype that uses Gemini 2.5 Pro to move from an initial question to staged research, evidence assessment, and a source-attributed report. Its central idea is that useful research should expose its reasoning path rather than hide everything behind one answer.
 
-## Six stages, with context
+## Problem and intended users
 
-The Python application guides a user from query collection through adaptive context gathering, research, evidence assessment, analysis, and report generation. Conversation modes adjust the depth of questioning, while session persistence keeps the work recoverable.
+A single prompt can produce a fluent response before the system understands the decision, its constraints, or the standard of evidence required. This project is intended for researchers, analysts, builders, and decision-makers who need a more deliberate workflow and a recoverable research session.
 
-Generated reports can be quick, standard, or detailed and include source attribution, confidence indicators, implementation guidance, and risk assessment.
+## My role and contribution
 
-## The underlying idea
+I created and developed the system. I designed the six-stage flow, conversation modes, session handling, evidence and confidence treatment, report formats, and the Python implementation.
 
-A useful research assistant should make its path visible. Personalization, source reliability, fact checking, uncertainty, and the eventual recommendation all need explicit treatment if the output is going to support a real decision.
+## Approach and technology
+
+The application moves through query collection, adaptive context gathering, research, evidence assessment, analysis, and report generation. Different conversation modes change the depth of clarification, while session persistence allows work to be resumed.
+
+Reports can be quick, standard, or detailed. The generated output includes source attribution, confidence indicators, implementation guidance, and risk considerations so a reader can inspect more than the final recommendation.
+
+## Evidence and current outcome
+
+The [public source repository](https://github.com/lumensparkxy/ai-deep-research-agent) documents and implements the staged workflow, Gemini integration, session management, and report generation. It is a complete working project, but I do not publish independent evaluations of factual accuracy, research completeness, or decision quality.
+
+## Limitations and status
+
+The project is a research and decision-support system, not an autonomous authority. Its output depends on model behaviour and available sources, and important conclusions still need source checking and human evaluation. API access and provider credentials are required to run it.

@@ -46,8 +46,8 @@
 | Check | Result |
 | --- | --- |
 | Astro type/content validation | Passed: 0 errors, 0 warnings, 0 hints |
-| Static build | Passed: 20 generated HTML pages, RSS, and sitemap |
-| Production route crawl | Passed: all 19 public HTML routes and RSS returned 200; the dedicated missing route returned 404 |
+| Static build | Passed: 23 generated HTML pages, RSS, sitemap index, page sitemap, and `llms.txt` |
+| Production route crawl | Passed: all 22 indexable HTML routes and discovery files returned 200; unknown routes returned 404 |
 | Work journey | Passed: homepage → work archive → Krishi AI case study |
 | Contact journey | Passed: mobile navigation → contact → verified public channels |
 | Résumé | Passed: complete accessible HTML résumé; PDF action remains hidden until a verified PDF is supplied |
@@ -63,9 +63,9 @@
 
 | Profile | Performance | Accessibility | Best practices | SEO |
 | --- | ---: | ---: | ---: | ---: |
-| Mobile | 98 | 100 | 96 | 100 |
-| Desktop | 100 | 100 | 96 | 100 |
+| Mobile | 99 | 100 | 100 | 100 |
+| Desktop | 100 | 100 | 100 | 100 |
 
-Reports: `docs/design/qa/lighthouse-mobile.json` and `docs/design/qa/lighthouse-desktop.json`.
+The archived reports in `docs/design/qa/` capture the original design baseline; the scores above were recorded during the final discoverability release audit.
 
 final result: passed

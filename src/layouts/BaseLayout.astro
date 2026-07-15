@@ -8,50 +8,72 @@ import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { profile } from '../data/profile';
+import {
+  DEFAULT_SOCIAL_IMAGE,
+  schemaGraph,
+  webPageSchema,
+  type JsonLdNode,
+  type JsonLdSchema,
+  type SocialImage,
+} from '../lib/seo';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  imageType?: string;
+  socialImage?: Partial<SocialImage>;
   type?: 'website' | 'article';
+  robots?: string;
   publishedAt?: string;
-  articleSchema?: Record<string, unknown>;
+  modifiedAt?: string;
+  schema?: JsonLdSchema;
+  articleSchema?: JsonLdNode;
   hideFooter?: boolean;
   compactFooter?: boolean;
 }
 
 const {
-  title = profile.title,
+  title = `${profile.name} — AI/ML Engineer & Product Builder in Zürich`,
   description = profile.description,
-  image = '/images/dossier/hero-geometric.webp',
+  image,
+  imageAlt,
+  imageWidth,
+  imageHeight,
+  imageType,
+  socialImage,
   type = 'website',
+  robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
   publishedAt,
+  modifiedAt,
+  schema,
   articleSchema,
   hideFooter = false,
   compactFooter = false,
 } = Astro.props;
 
-const pageTitle = title === profile.title ? `${profile.name} — ${title}` : `${title} — ${profile.name}`;
+const pageTitle = title.includes(profile.name) ? title : `${title} — ${profile.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? profile.siteUrl);
-const socialUrls = profile.social.map((item) => item.href);
-const profileSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'ProfilePage',
-  dateModified: profile.updatedAt,
-  mainEntity: {
-    '@type': 'Person',
-    '@id': `${profile.siteUrl}/#vivek`,
-    name: profile.name,
-    jobTitle: profile.title,
-    description: profile.description,
-    url: profile.siteUrl,
-    sameAs: socialUrls,
-    homeLocation: { '@type': 'Place', name: profile.location },
-    alumniOf: { '@type': 'CollegeOrUniversity', name: profile.education[0].institution },
-    knowsAbout: profile.skills.flatMap((group) => group.items),
-  },
+const resolvedSocialImage: SocialImage = {
+  ...DEFAULT_SOCIAL_IMAGE,
+  ...socialImage,
+  src: image ?? socialImage?.src ?? DEFAULT_SOCIAL_IMAGE.src,
+  alt: imageAlt ?? socialImage?.alt ?? DEFAULT_SOCIAL_IMAGE.alt,
+  width: imageWidth ?? socialImage?.width ?? DEFAULT_SOCIAL_IMAGE.width,
+  height: imageHeight ?? socialImage?.height ?? DEFAULT_SOCIAL_IMAGE.height,
+  type: imageType ?? socialImage?.type ?? DEFAULT_SOCIAL_IMAGE.type,
 };
-const schema = articleSchema ?? (Astro.url.pathname === '/' ? profileSchema : undefined);
+const socialImageUrl = new URL(resolvedSocialImage.src, Astro.site ?? profile.siteUrl);
+const rawSchema = schema ?? articleSchema ?? webPageSchema({
+  path: Astro.url.pathname,
+  title: pageTitle,
+  description,
+  modifiedAt,
+});
+const resolvedSchema = Array.isArray(rawSchema) ? schemaGraph(rawSchema) : rawSchema;
 ---
 
 <!doctype html>
@@ -62,25 +84,38 @@ const schema = articleSchema ?? (Astro.url.pathname === '/' ? profileSchema : un
     <meta name="theme-color" content="#f7f4ec" />
     <meta name="description" content={description} />
     <meta name="author" content={profile.name} />
+    <meta name="robots" content={robots} />
     <meta name="generator" content={Astro.generator} />
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin="anonymous" />
     <style is:inline set:html={`@font-face{font-family:"Instrument Serif";font-style:normal;font-display:swap;font-weight:400;src:url("${instrumentSerifDataUrl}") format("woff2");}`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" type="application/rss+xml" title={`${profile.name} — Writing`} href="/rss.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
     <title>{pageTitle}</title>
 
     <meta property="og:type" content={type} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(image, Astro.site ?? profile.siteUrl)} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content={resolvedSocialImage.alt} />
+    <meta property="og:image:width" content={String(resolvedSocialImage.width)} />
+    <meta property="og:image:height" content={String(resolvedSocialImage.height)} />
+    <meta property="og:image:type" content={resolvedSocialImage.type} />
     <meta property="og:site_name" content={profile.name} />
-    {publishedAt && <meta property="article:published_time" content={publishedAt} />}
+    {type === 'article' && publishedAt && <meta property="article:published_time" content={publishedAt} />}
+    {type === 'article' && modifiedAt && <meta property="article:modified_time" content={modifiedAt} />}
+    {type === 'article' && <meta property="article:author" content={`${profile.siteUrl}/#vivek`} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(image, Astro.site ?? profile.siteUrl)} />
-    {schema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />}
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={resolvedSocialImage.alt} />
+    {resolvedSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(resolvedSchema)} />}
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>

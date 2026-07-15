@@ -42,7 +42,7 @@ export const profile = {
     introduction:
       'I build and evaluate AI systems, turn ideas into working products, and share what I learn—from compliance NLP to Krishi AI for farmers.',
   },
-  updatedAt: '2026-07-14',
+  updatedAt: '2026-07-15',
   email: undefined as string | undefined,
   bookingUrl: undefined as string | undefined,
   resumePdf: undefined as string | undefined,

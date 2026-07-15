@@ -2,7 +2,7 @@
 title: "Krishi AI"
 description: "A multilingual AI farming companion combining agricultural guidance, plant diagnosis, live mandi prices, voice, weather, and a practical knowledge base."
 publishedAt: "2025-12-04"
-updatedAt: "2026-07-06"
+updatedAt: "2026-07-15"
 featured: true
 draft: false
 cover: "/images/dossier/project-blocks.webp"
@@ -14,23 +14,30 @@ sourceUrl: "https://github.com/lumensparkxy/androidifyxy"
 liveUrl: "https://play.google.com/store/apps/details?id=com.maswadkar.developers.androidify"
 ---
 
-Krishi AI is where my farming roots and my work in artificial intelligence meet. It is a bootstrapped, independently built product designed to make practical agricultural knowledge more accessible to Indian farmers in their own context and language.
+Krishi AI is a maintained, multilingual Android farming assistant that combines AI guidance, plant diagnosis, live mandi prices, voice, weather, and practical agricultural knowledge. I built it independently to make useful information easier for Indian farmers to reach in their own language and context.
 
-## What it brings together
+## Problem and intended users
 
-The Android app combines AI chat, plant diagnosis, live mandi prices sourced from India’s Open Government Data platform, local weather, multilingual voice conversations, crop knowledge, saved history, and conversation export.
+Farmers often need timely guidance across crops, pests, processes, weather, and prices, but the information is fragmented and may not be easy to use in a local language or while working in the field. Krishi AI is designed for farmers and other agricultural stakeholders who want one accessible starting point for those questions.
 
-The product spans Kotlin and Jetpack Compose on Android, Firebase and cloud functions on the backend, and a companion web experience. I handle product direction, application development, backend, infrastructure, releases, and the learning loop with users.
+## My role and contribution
 
-## From an old idea to an AI-native product
+I am the founder and sole product developer. I handle product direction, Android development, backend services, infrastructure, releases, public documentation, and the feedback loop around the product.
 
-The idea has a longer history. An earlier app, DigitalMandi, reached 41,000 users in 2017 before I stopped maintaining it. Krishi AI is both a return to that mission and a more ambitious rebuild: broader guidance, richer language access, and AI used as a practical interface to agricultural knowledge.
+## Approach and technology
 
-## Current public milestones
+The Android application uses Kotlin, Jetpack Compose, MVVM, and clean-architecture patterns. Firebase and cloud functions support authentication, history, application services, and AI integrations. Live mandi prices come from India’s Open Government Data platform, while the product also includes plant diagnosis, local weather, crop knowledge, multilingual voice conversations, saved history, offline-aware behaviour, and PDF export.
 
-- More than 10,000 Google Play downloads as of July 2026.
-- Accepted into the Google for Startups Cloud Program.
-- A strategic partnership with Headway Earth to bring Krishi AI’s AgriTech services to customers in Nepal.
-- Shared publicly through a first talk, *From Village Fields to AI: Building Krishi AI with LLM Tools*.
+The idea has a longer history. DigitalMandi reached 41,000 users in 2017 before I stopped maintaining it. Krishi AI is a return to that mission with a broader product and a more disciplined commitment to continuing the work.
 
-The product is still evolving. The purpose remains steady: help farmers get more timely access to knowledge, process guidance, pricing, and support.
+## Evidence and current outcomes
+
+- The [Google Play listing](https://play.google.com/store/apps/details?id=com.maswadkar.developers.androidify) publicly shows 10K+ downloads and identifies me as the developer.
+- The [source repository](https://github.com/lumensparkxy/androidifyxy) documents the Android and cloud implementation.
+- I publicly documented acceptance into the [Google for Startups Cloud Program](https://www.linkedin.com/posts/maswadkar_krishiai-googlecloud-googleforstartups-activity-7467224706547634177-yha-).
+- I publicly announced a [strategic partnership with Headway Earth](https://www.linkedin.com/posts/maswadkar_krishiai-headwayearth-agritech-activity-7475401070333116417-Nq9W) to offer Krishi AI AgriTech services to its customers in Nepal.
+- I shared the build journey in the talk [*From Village Fields to AI: Building Krishi AI with LLM Tools*](https://www.youtube.com/watch?v=ZUhdLFDr-vE).
+
+## Limitations and status
+
+Krishi AI is still evolving. AI-generated guidance can be incomplete or wrong, market and weather data can change, and the app should not replace local agronomic expertise or professional judgment in consequential decisions. Public milestones show reach and programme participation; they do not by themselves prove improvements in yield, income, cost, or environmental impact, so I do not claim those outcomes here.

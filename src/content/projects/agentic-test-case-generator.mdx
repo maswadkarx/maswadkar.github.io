@@ -2,8 +2,8 @@
 title: "Agentic Test Case Generator"
 description: "A human-in-the-loop system that turns requirements and connected evidence into reviewable, exportable, automation-ready test cases."
 publishedAt: "2026-02-04"
-updatedAt: "2026-07-13"
-featured: false
+updatedAt: "2026-07-15"
+featured: true
 draft: false
 cover: "/images/dossier/project-orbit.webp"
 coverAlt: "Abstract ultramarine half-circle and modular black grid on textured ivory paper"
@@ -13,14 +13,26 @@ status: "In progress"
 sourceUrl: "https://github.com/lumensparkxy/agentic_test_case_generator"
 ---
 
-The Agentic Test Case Generator connects two parts of my career: deep experience in quality engineering and newer work with AI agents.
+The Agentic Test Case Generator is an in-progress, human-in-the-loop quality-engineering system. It turns requirements and supporting evidence into reviewable test cases, shows coverage gaps, and prepares approved cases for export or Playwright execution.
 
-## The workflow
+## Problem and intended users
 
-Users can upload requirements from Word, Markdown, or Excel, or import work from Jira and Azure DevOps. The system extracts requirements, enriches them with grounded context from supporting links and artifacts, generates test cases into a user-defined template, and exposes coverage diagnostics before anything is approved.
+Test teams often spend substantial time translating requirements into a consistent test format, reconnecting each case to its evidence, and checking whether important paths were missed. The system is intended for quality engineers and delivery teams that want AI assistance without giving up traceability or approval control.
 
-Approved candidates can be previewed for browser-automation readiness and executed with Playwright. Outputs can be exported as CSV, Excel, or JSON.
+## My role and contribution
 
-## Human control is part of the design
+I created and develop the product, drawing on my background in test management and quality engineering. My contribution covers the workflow, agent design, integrations, review model, browser-automation path, documentation, and implementation.
 
-This is not a black-box test generator. Review, approval, security boundaries, artifact retention, integration credentials, and production authentication are documented parts of the system. The goal is to remove repetition while preserving the judgment that good testing depends on.
+## Approach and technology
+
+Users can upload Word, Markdown, or Excel requirements, import work from Jira or Azure DevOps, and attach links or artifacts as additional context. The application extracts requirements, generates test cases into a user-defined template, and presents coverage diagnostics before approval.
+
+Approved candidates can be checked for browser-automation readiness and executed with Playwright. Results can be exported as CSV, Excel, or JSON. Firebase Authentication protects access, while uploaded document content is handled in memory rather than retained as a document store.
+
+## Evidence and current outcome
+
+The [public source repository](https://github.com/lumensparkxy/agentic_test_case_generator) contains the working application and documentation for uploads, work-item integrations, template generation, diagnostics, review, export, and Playwright execution. The project demonstrates an end-to-end workflow; I do not yet publish a benchmark for generation accuracy, time saved, or production adoption.
+
+## Limitations and status
+
+The project remains in progress. Generated tests still require human judgment, connected services require the user’s own credentials, and Playwright execution depends on an appropriately configured target and browser environment. The system is designed to assist accountable testers, not to make release decisions autonomously.
