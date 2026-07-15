@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import MediaPicture from '../../components/MediaPicture.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import { latestDate } from '../../lib/seo';
 
@@ -52,13 +53,14 @@ const formatDuration = (duration?: string) => {
           return (
             <article class="media-record" data-reveal>
               <a class="media-record__visual" href={href} aria-label={`Open ${entry.data.title}`}>
-                {entry.data.thumbnailUrl ? (
-                  <img
-                    src={entry.data.thumbnailUrl}
+                {entry.data.poster ? (
+                  <MediaPicture
+                    asset={entry.data.poster}
                     alt=""
-                    width="1280"
-                    height="720"
+                    sizes="(min-width: 900px) 38rem, calc(100vw - 2.5rem)"
+                    widths={[390, 620, 768, 1024]}
                     loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={index === 0 ? 'high' : 'auto'}
                   />
                 ) : (
                   <span class="media-record__placeholder" aria-hidden="true"><Icon name="ph:waveform" /></span>

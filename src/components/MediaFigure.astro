@@ -1,0 +1,44 @@
+---
+import MediaPicture from './MediaPicture.astro';
+import type { MediaAsset } from '../lib/media';
+
+interface Props {
+  asset: MediaAsset;
+  class?: string;
+  sizes?: string;
+  eager?: boolean;
+  quality?: number;
+  fullImageLabel?: string;
+}
+
+const {
+  asset,
+  class: className,
+  sizes,
+  eager = false,
+  quality = 62,
+  fullImageLabel = 'Open full-resolution image',
+} = Astro.props;
+---
+
+<figure class:list={['media-figure', className]}>
+  <MediaPicture
+    asset={asset}
+    sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+    quality={quality}
+  />
+  <figcaption>
+    <span>
+      {asset.caption && <span class="media-figure__caption">{asset.caption}</span>}
+      {asset.credit && <span class="media-figure__credit">Credit: {asset.credit}</span>}
+    </span>
+    <span class="media-figure__links">
+      {asset.sourceUrl && (
+        <a href={asset.sourceUrl} target="_blank" rel="noopener noreferrer">Source</a>
+      )}
+      <a href={asset.src.src} target="_blank" rel="noopener noreferrer">{fullImageLabel}</a>
+    </span>
+  </figcaption>
+</figure>

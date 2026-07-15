@@ -8,8 +8,7 @@ export type SocialLink = {
 export type Interest = {
   title: string;
   description: string;
-  image: string;
-  imageAlt: string;
+  media: MediaAsset;
 };
 
 export type Experience = {
@@ -144,14 +143,30 @@ export const profile = {
     {
       title: 'Agriculture and rural technology',
       description: 'Farming roots continue to shape the problems I choose to work on and the people I want technology to serve.',
-      image: '/images/dossier/project-blocks.webp',
-      imageAlt: 'Abstract black and ultramarine geometric print on textured ivory paper',
+      media: {
+        src: agricultureImage,
+        alt: 'Krishi AI app icon and multilingual product screen representing Vivek Maswadkar’s work in agricultural technology',
+        kind: 'screenshot',
+        caption: 'Current Krishi AI product artifacts represent the agriculture interest until a personal farming photograph is available.',
+        credit: 'Vivek Maswadkar / Krishi AI',
+        sourceUrl: 'https://github.com/lumensparkxy/androidifyxy',
+        focalPoint: 'center',
+        provenance: 'project-evidence',
+      },
     },
     {
       title: 'Teaching with a beginner’s mind',
       description: 'I share practical experiments, tutorials, and honest build notes so complex AI ideas become more approachable.',
-      image: '/images/dossier/reading-ideas.webp',
-      imageAlt: 'Expressive black brush marks on warm ivory paper',
+      media: {
+        src: teachingImage,
+        alt: 'Vivek Maswadkar presenting the public talk From Village Fields to AI',
+        kind: 'photograph',
+        caption: 'Verified still from the public talk From Village Fields to AI.',
+        credit: 'Vivek Maswadkar',
+        sourceUrl: 'https://www.youtube.com/watch?v=ZUhdLFDr-vE',
+        focalPoint: 'center',
+        provenance: 'user-owned',
+      },
     },
   ] satisfies Interest[],
   social: [
@@ -189,3 +204,6 @@ export const chapters = [
   { number: '04', name: 'Living', conventional: 'About', href: '/about/', summary: 'Roots, values, and the person beyond work.' },
   { number: '05', name: 'Connecting', conventional: 'Contact', href: '/contact/', summary: 'Ways to start a conversation.' },
 ] as const;
+import agricultureImage from '../assets/media/personal/agriculture-krishi-artifacts.webp';
+import teachingImage from '../assets/media/personal/teaching-public-talk.webp';
+import type { MediaAsset } from '../lib/media';

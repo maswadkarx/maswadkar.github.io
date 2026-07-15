@@ -1,0 +1,28 @@
+digraph SnowflakeFlow {
+  graph [bgcolor="#f7f4ec", pad="0.55", nodesep="0.58", ranksep="0.64", splines="spline", fontname="Inter"];
+  node [shape="box", style="rounded,filled", fillcolor="#f7f4ec", color="#1745c7", penwidth="2.2", fontname="Inter", fontsize="17", fontcolor="#111214", margin="0.25,0.18", width="2.05", height="0.78"];
+  edge [color="#1745c7", penwidth="2.0", arrowsize="0.75"];
+  s [label="Snowflake account"];
+  c [label="Usage collector"];
+  l [label="Local persistence"];
+  q [label="SQLite", fillcolor="#dce5ff"];
+  j [label="JSON cache", fillcolor="#dce5ff"];
+  p [label="Parquet history", fillcolor="#dce5ff"];
+  f [label="Forecast pipeline"];
+  d [label="Dashboard", fillcolor="#1745c7", fontcolor="#ffffff"];
+  a [label="Alerts", fillcolor="#1745c7", fontcolor="#ffffff"];
+  r [label="Reports", fillcolor="#1745c7", fontcolor="#ffffff"];
+  {rank=same; s; c; l}
+  {rank=same; q; j; p; f}
+  {rank=same; d; a; r}
+  s -> c -> l;
+  l -> q;
+  l -> j;
+  l -> p;
+  q -> f;
+  j -> f;
+  p -> f;
+  f -> d;
+  f -> a;
+  f -> r;
+}

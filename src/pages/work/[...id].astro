@@ -2,6 +2,8 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import MediaFigure from '../../components/MediaFigure.astro';
+import { socialImageProps } from '../../lib/media';
 import { creativeWorkSchema, utcDate } from '../../lib/seo';
 
 export async function getStaticPaths() {
@@ -71,6 +73,7 @@ const projectSchema = creativeWorkSchema({
   description={entry.data.description}
   publishedAt={entry.data.publishedAt}
   modifiedAt={lastVerified}
+  socialImage={entry.data.socialImage ? socialImageProps(entry.data.socialImage) : undefined}
   schema={projectSchema}
 >
   <article class="detail-page">
@@ -98,13 +101,22 @@ const projectSchema = creativeWorkSchema({
       </div>
     </header>
     {entry.data.cover && (
-      <figure class="detail-cover" data-reveal>
-        <img src={entry.data.cover} alt={entry.data.coverAlt ?? ''} width="1536" height="1024" />
-      </figure>
+      <MediaFigure asset={entry.data.cover} class="detail-cover" eager={true} />
     )}
     <div class="prose" data-reveal>
       <Content />
     </div>
+    {entry.data.gallery.length > 0 && (
+      <section class="media-gallery" aria-labelledby="project-evidence-title" data-reveal>
+        <header>
+          <p class="eyebrow">Project evidence</p>
+          <h2 id="project-evidence-title">Inside the work.</h2>
+        </header>
+        <div class:list={['media-gallery__grid', entry.id === 'krishi-ai' && 'media-gallery__grid--screens']}>
+          {entry.data.gallery.map((asset) => <MediaFigure asset={asset} />)}
+        </div>
+      </section>
+    )}
     {relatedItems.length > 0 && (
       <aside class="related-content" aria-labelledby="related-content-title" data-reveal>
         <header>

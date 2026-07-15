@@ -1,13 +1,29 @@
 ---
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaPicture from '../components/MediaPicture.astro';
 import PageIntro from '../components/PageIntro.astro';
 import { profile } from '../data/profile';
+import nowImage from '../assets/media/personal/now-current-work.webp';
+import nowSocialImage from '../assets/media/social/now-vivek-social.webp';
+import { socialImageProps, type MediaAsset } from '../lib/media';
+
+const nowMedia: MediaAsset = {
+  src: nowImage,
+  alt: 'Current-work collage showing Krishi AI, an agentic test workflow, and Vivek Maswadkar’s public AI talk',
+  kind: 'screenshot',
+  caption: 'Current evidence: Krishi AI, a sanitized agent workflow, and a verified public-talk still.',
+  credit: 'Vivek Maswadkar',
+  focalPoint: 'center',
+  provenance: 'project-evidence',
+};
 ---
 
 <BaseLayout
   title="Now — Vivek Maswadkar"
   description="What Vivek Maswadkar is building, learning, and aiming toward now: Krishi AI, reliable agentic systems, and practical AI education."
+  modifiedAt={profile.updatedAt}
+  socialImage={socialImageProps({ src: nowSocialImage, alt: 'Vivek Maswadkar’s current work across Krishi AI, agentic systems, and teaching' })}
 >
   <PageIntro
     number="03"
@@ -18,7 +34,13 @@ import { profile } from '../data/profile';
 
   <section class="split-feature split-feature--now">
     <div class="split-feature__image" data-reveal>
-      <img src="/images/dossier/project-grid.webp" alt="Abstract ultramarine field, black block, and dot matrix on textured ivory paper" width="1536" height="1024" />
+      <MediaPicture
+        asset={nowMedia}
+        sizes="(min-width: 900px) 41rem, calc(100vw - 2.5rem)"
+        widths={[390, 620, 768, 1024, 1280]}
+        loading="eager"
+        fetchpriority="high"
+      />
     </div>
     <div class="split-feature__content" data-reveal>
       <p class="chapter-label">Current focus</p>

@@ -2,7 +2,9 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import MediaFigure from '../../components/MediaFigure.astro';
 import { profile } from '../../data/profile';
+import { socialImageProps } from '../../lib/media';
 import { blogPostingSchema, utcDate } from '../../lib/seo';
 
 export async function getStaticPaths() {
@@ -72,6 +74,7 @@ const relatedItems = [
   type="article"
   publishedAt={entry.data.publishedAt}
   modifiedAt={entry.data.updatedAt ?? entry.data.publishedAt}
+  socialImage={entry.data.socialImage ? socialImageProps(entry.data.socialImage) : undefined}
   schema={articleSchema}
 >
   <article class="detail-page detail-page--article">
@@ -106,13 +109,22 @@ const relatedItems = [
       </div>
     </header>
     {entry.data.cover && (
-      <figure class="detail-cover detail-cover--wide" data-reveal>
-        <img src={entry.data.cover} alt={entry.data.coverAlt ?? ''} width="1536" height="864" />
-      </figure>
+      <MediaFigure asset={entry.data.cover} class="detail-cover detail-cover--wide" eager={true} />
     )}
     <div class="prose" data-reveal>
       <Content />
     </div>
+    {entry.data.gallery.length > 0 && (
+      <section class="media-gallery" aria-labelledby="article-evidence-title" data-reveal>
+        <header>
+          <p class="eyebrow">Supporting media</p>
+          <h2 id="article-evidence-title">A closer look.</h2>
+        </header>
+        <div class="media-gallery__grid">
+          {entry.data.gallery.map((asset) => <MediaFigure asset={asset} />)}
+        </div>
+      </section>
+    )}
     {relatedItems.length > 0 && (
       <aside class="related-content" aria-labelledby="related-content-title" data-reveal>
         <header>

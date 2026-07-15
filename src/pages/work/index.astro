@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import MediaPicture from '../../components/MediaPicture.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import { latestDate } from '../../lib/seo';
 
@@ -28,7 +29,12 @@ const lastModified = latestDate(projects.map((project) => project.data.updatedAt
         <article class="archive-item" data-reveal>
           <a class="archive-item__image" href={`/work/${project.id}/`} aria-label={`Read ${project.data.title}`}>
             {project.data.cover && (
-              <img src={project.data.cover} alt={project.data.coverAlt ?? ''} width="1536" height="1024" loading="lazy" />
+              <MediaPicture
+                asset={project.data.cover}
+                alt=""
+                sizes="(min-width: 900px) 38rem, calc(100vw - 2.5rem)"
+                widths={[390, 620, 768, 1024]}
+              />
             )}
           </a>
           <div class="archive-item__number">{String(index + 1).padStart(2, '0')}</div>

@@ -1,0 +1,45 @@
+---
+import { Picture } from 'astro:assets';
+import type { MediaAsset } from '../lib/media';
+import { focalPosition } from '../lib/media';
+
+interface Props {
+  asset: MediaAsset;
+  alt?: string;
+  class?: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  quality?: number;
+}
+
+const {
+  asset,
+  alt = asset.alt,
+  class: className,
+  sizes = '(min-width: 900px) 82rem, calc(100vw - 2.5rem)',
+  widths = [390, 620, 768, 1024, 1280, 1600],
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  quality = 78,
+} = Astro.props;
+
+const requestedWidths = widths.filter((width) => width <= asset.src.width);
+const responsiveWidths = [...new Set(requestedWidths.length > 0 ? requestedWidths : [asset.src.width])]
+  .sort((a, b) => a - b);
+---
+
+<Picture
+  src={asset.src}
+  alt={alt}
+  class={className}
+  formats={['avif', 'webp']}
+  widths={responsiveWidths}
+  sizes={sizes}
+  loading={loading}
+  decoding="async"
+  fetchpriority={fetchpriority}
+  quality={quality}
+  style={`object-position: ${focalPosition(asset.focalPoint)};`}
+/>

@@ -8,7 +8,18 @@ draft: false
 tags: ["Talk", "Krishi AI", "Agricultural AI", "LLM product", "AI-assisted coding"]
 type: "talk"
 url: "https://www.youtube.com/watch?v=ZUhdLFDr-vE"
-thumbnailUrl: "https://i.ytimg.com/vi/ZUhdLFDr-vE/maxresdefault.jpg"
+poster:
+  src: "../../assets/media/video/from-village-fields-poster.webp"
+  alt: "Vivek Maswadkar speaking in the public talk From Village Fields to AI"
+  kind: "photograph"
+  caption: "Verified public-talk still from From Village Fields to AI."
+  credit: "Vivek Maswadkar"
+  sourceUrl: "https://www.youtube.com/watch?v=ZUhdLFDr-vE"
+  focalPoint: "center"
+  provenance: "user-owned"
+socialImage:
+  src: "../../assets/media/social/from-village-fields-social.webp"
+  alt: "Vivek Maswadkar presenting From Village Fields to AI"
 duration: "PT19M37S"
 embedUrl: "https://www.youtube-nocookie.com/embed/ZUhdLFDr-vE"
 videoMetadataVerified: true

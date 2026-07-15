@@ -1,15 +1,30 @@
 ---
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaPicture from '../components/MediaPicture.astro';
 import PageIntro from '../components/PageIntro.astro';
 import { profile } from '../data/profile';
+import portraitImage from '../assets/media/personal/vivek-maswadkar-portrait.webp';
+import aboutSocialImage from '../assets/media/social/about-vivek-social.webp';
+import { socialImageProps, type MediaAsset } from '../lib/media';
 import { aboutSchema } from '../lib/seo';
+
+const portrait: MediaAsset = {
+  src: portraitImage,
+  alt: 'Portrait of Vivek Maswadkar',
+  kind: 'photograph',
+  caption: 'Vivek Maswadkar.',
+  credit: 'Vivek Maswadkar',
+  focalPoint: 'top',
+  provenance: 'user-owned',
+};
 ---
 
 <BaseLayout
   title="Living — About"
   description="The roots, values, and journey behind Vivek Maswadkar’s work in AI and technology."
   modifiedAt={profile.updatedAt}
+  socialImage={socialImageProps({ src: aboutSocialImage, alt: 'Portrait of Vivek Maswadkar, AI/ML engineer and product builder' })}
   schema={aboutSchema()}
 >
   <PageIntro
@@ -30,7 +45,13 @@ import { aboutSchema } from '../lib/seo';
       </a>
     </div>
     <div class="split-feature__image" data-reveal>
-      <img src="/images/dossier/hero-geometric.webp" alt="Abstract ultramarine and black geometric print on textured ivory paper" width="1536" height="1536" />
+      <MediaPicture
+        asset={portrait}
+        sizes="(min-width: 900px) 41rem, calc(100vw - 2.5rem)"
+        widths={[390, 620, 768, 1024, 1200]}
+        loading="eager"
+        fetchpriority="high"
+      />
     </div>
   </section>
 
@@ -61,7 +82,11 @@ import { aboutSchema } from '../lib/seo';
     <div class="interest-grid">
       {profile.interests.map((interest) => (
         <article data-reveal>
-          <img src={interest.image} alt={interest.imageAlt} width="1536" height="1024" loading="lazy" />
+          <MediaPicture
+            asset={interest.media}
+            sizes="(min-width: 900px) 41rem, calc(100vw - 2.5rem)"
+            widths={[390, 620, 768, 1024]}
+          />
           <div>
             <h3>{interest.title}</h3>
             <p>{interest.description}</p>

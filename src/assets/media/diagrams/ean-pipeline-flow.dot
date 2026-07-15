@@ -1,0 +1,23 @@
+digraph EANPipeline {
+  graph [bgcolor="#f7f4ec", pad="0.50", nodesep="0.56", ranksep="0.62", splines="ortho", fontname="Inter"];
+  node [shape="box", style="rounded,filled", fillcolor="#f7f4ec", color="#1745c7", penwidth="2.2", fontname="Inter", fontsize="17", fontcolor="#111214", margin="0.24,0.18", width="2.20", height="0.78"];
+  edge [color="#1745c7", penwidth="2.0", arrowsize="0.75", fontname="Inter", fontsize="12", fontcolor="#1745c7"];
+  i [label="Product image"];
+  p [label="Normalize & enhance"];
+  l [label="Local decode\nZBar / ZXing"];
+  v [shape="diamond", label="Valid\nbarcode?", fillcolor="#dce5ff", width="1.45", height="1.05"];
+  g [label="Gemini fallback"];
+  c [shape="diamond", label="Confidence\nsufficient?", fillcolor="#dce5ff", width="1.65", height="1.15"];
+  h [label="Human review"];
+  r [label="Verified result", fillcolor="#1745c7", fontcolor="#ffffff"];
+  {rank=same; i; p; l}
+  {rank=same; v; g; c}
+  {rank=same; h; r}
+  i -> p -> l -> v;
+  v -> r [label="yes"];
+  v -> g [label="no"];
+  g -> c;
+  c -> r [label="yes"];
+  c -> h [label="review"];
+  h -> r;
+}

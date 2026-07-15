@@ -1,4 +1,4 @@
-# Design QA — Living Dossier Portfolio (Design 1)
+# Design QA — Living Dossier Portfolio (Design 1) + Evidence-First Media
 
 ## Source of truth
 
@@ -11,6 +11,19 @@
 - Mobile navigation capture: `docs/design/qa/design-1-mobile-menu.png`
 - Desktop viewport/state: 1440 × 1000, homepage at rest, stitched from artifact-free browser captures at exact scroll positions.
 - Mobile viewport/state: 390 × 844, homepage at rest and navigation open/closed.
+
+## Evidence-first media refresh
+
+- Implementation date: 15 July 2026.
+- Desktop implementation capture: `docs/design/qa/media-refresh-home-desktop.png`.
+- Reference/implementation comparison: `docs/design/qa/media-refresh-home-comparison.webp`.
+- Representative route contact sheet: `docs/design/qa/media-refresh-contact-sheet.webp`.
+- Documentary project evidence: `docs/design/qa/media-refresh-krishi.png`.
+- Approved portrait treatment: `docs/design/qa/media-refresh-about.png`.
+- The refresh preserves the selected Design 1 typography, spacing, palette, navigation, and geometric homepage hero.
+- Projects now lead with product evidence, source-grounded diagrams, or disclosed synthetic demonstrations. DigitalMandi uses a disclosed editorial archival cover.
+- Every published project and essay has a unique cover and a unique 1200 × 630 social image. Generated and synthetic work is disclosed in the visible caption and typed provenance.
+- The Android Studio QA folder remains unpublished. No annotated captures, failed-ad states, placeholder location data, or unverified product photographs were copied into the site.
 
 ## Comparison history
 
@@ -40,6 +53,10 @@
 - Tablet layouts simplify cleanly and the mobile experience becomes a single-column editorial story with a full-screen numbered menu.
 - Longer verified project and essay names create a modest content-driven increase in page length without changing the reference’s visual grammar.
 - No unresolved P0, P1, or P2 visual differences remain within the truthful-content scope.
+- Detail-page covers are contained 16:9 figures rather than full-viewport backdrops, with descriptive alt text, captions, credits, and links to their source or full-resolution asset.
+- Work, writing, About, Now, and media pages now have distinct, content-specific imagery without turning the archives into a generic card grid.
+- Real Chrome visual QA covered the homepage plus Work, Krishi AI, DigitalMandi, Agentic Test Case Generator, Snowflake Cost Dashboard, representative writing, About, Now, Media, and talk-detail routes. No failed images, horizontal overflow, console errors, or pre-play video iframes were found.
+- The unchanged responsive navigation retains the previously recorded 390 px mobile evidence. Responsive image candidates and layout rules were revalidated at the 1024, 768, and 390 px breakpoints; Lighthouse additionally exercised the worst image at 390 px with DPR 3.
 
 ## Functional and accessibility QA
 
@@ -58,6 +75,14 @@
 | Reduced motion | Reveal transitions and smooth scrolling disabled through `prefers-reduced-motion` and runtime detection |
 | Draft filtering | Draft/template content produced no public routes |
 | Optional data | Email, booking link, résumé PDF, and unverified personal claims remain hidden |
+| Media contracts | Passed: unique cover/social assets, valid kinds and provenance, required editorial/synthetic disclosure, and non-empty detail-page alt text |
+| Image delivery | Passed: Astro AVIF/WebP responsive sources, intrinsic dimensions, lazy loading below the first meaningful hero, and focal-point control |
+| Project evidence | Passed: real Krishi, Agentic, and Snowflake captures; source-grounded diagrams; disclosed DigitalMandi illustration |
+| Personal media | Passed: approved portrait on About and Person schema; verified public-talk and Krishi artifacts on Now |
+| Video privacy | Passed: local poster and zero iframe or third-party image request before Play; YouTube loads from `youtube-nocookie.com` after activation |
+| Search and sharing | Passed: page-specific ImageObject/primaryImage, Open Graph/X image metadata, image/video sitemap entries, and Media RSS content |
+| Metadata privacy | Passed: no EXIF or GPS metadata detected in published media |
+| Media budgets | Passed: largest 1600 px hero 213,782 bytes; worst 390 px/DPR 3 selection 119,385 bytes; largest social image 220,334 bytes |
 
 ## Lighthouse
 
@@ -66,6 +91,6 @@
 | Mobile | 99 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
-The archived reports in `docs/design/qa/` capture the original design baseline; the scores above were recorded during the final discoverability release audit.
+Fresh reports in `docs/design/qa/` were recorded with Google Chrome 150 and Lighthouse 13.4.0 against the final production build. Mobile homepage LCP was 2.11 s with CLS 0; desktop LCP was 0.55 s with CLS 0.049. A separate 390 × 844, DPR 3 audit of the heaviest Bat & Ball essay cover recorded performance 99, LCP 2.10 s, CLS 0, and selected the 119,385-byte AVIF candidate.
 
 final result: passed

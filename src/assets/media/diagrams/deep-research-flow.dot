@@ -1,0 +1,17 @@
+digraph DeepResearch {
+  graph [bgcolor="#f7f4ec", pad="0.55", nodesep="0.55", ranksep="1.05", splines="spline", fontname="Inter", fontcolor="#1745c7"];
+  node [shape="box", style="rounded,filled", fillcolor="#f7f4ec", color="#1745c7", penwidth="2.2", fontname="Inter", fontsize="19", fontcolor="#111214", margin="0.28,0.20", width="2.35", height="1.35"];
+  edge [color="#1745c7", penwidth="2.0", arrowsize="0.8", fontname="Inter", fontsize="13", fontcolor="#1745c7"];
+  q [label="1 · Question"];
+  c [label="2 · Adaptive context"];
+  r [label="3 · Research"];
+  e [label="4 · Evidence assessment"];
+  a [label="5 · Analysis"];
+  o [label="6 · Source-attributed report", fillcolor="#1745c7", fontcolor="#ffffff"];
+  {rank=same; q; c; r}
+  {rank=same; e; a; o}
+  q -> c -> r;
+  r -> e;
+  e -> a -> o;
+  c -> q [style="dashed", label="refine", constraint=false];
+}

@@ -8,7 +8,18 @@ draft: false
 tags: ["Product demo", "Krishi AI", "Agricultural AI", "Android"]
 type: "video"
 url: "https://www.youtube.com/watch?v=AFKvUwoAjHA"
-thumbnailUrl: "https://i.ytimg.com/vi/AFKvUwoAjHA/maxresdefault.jpg"
+poster:
+  src: "../../assets/media/video/krishi-ai-walkthrough-poster.webp"
+  alt: "Krishi AI walkthrough poster showing the Android farming assistant"
+  kind: "screenshot"
+  caption: "Local poster for the verified Krishi AI product walkthrough."
+  credit: "Vivek Maswadkar / Krishi AI"
+  sourceUrl: "https://www.youtube.com/watch?v=AFKvUwoAjHA"
+  focalPoint: "center"
+  provenance: "project-evidence"
+socialImage:
+  src: "../../assets/media/social/krishi-ai-walkthrough-social.webp"
+  alt: "Krishi AI product walkthrough"
 duration: "PT8M43S"
 embedUrl: "https://www.youtube-nocookie.com/embed/AFKvUwoAjHA"
 videoMetadataVerified: true

@@ -2,6 +2,8 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import MediaPicture from '../../components/MediaPicture.astro';
+import { socialImageProps } from '../../lib/media';
 import { mediaSchema } from '../../lib/seo';
 
 export async function getStaticPaths() {
@@ -64,7 +66,7 @@ const mediaStructuredData = mediaSchema({
   modifiedAt: entry.data.updatedAt,
   tags: entry.data.tags,
   sourceUrl: entry.data.url,
-  thumbnailUrl: entry.data.thumbnailUrl,
+  thumbnail: entry.data.poster,
   duration: entry.data.duration,
   embedUrl: entry.data.embedUrl,
   videoMetadataVerified: entry.data.videoMetadataVerified,
@@ -74,11 +76,7 @@ const mediaStructuredData = mediaSchema({
 <BaseLayout
   title={entry.data.title}
   description={entry.data.description}
-  image={entry.data.thumbnailUrl}
-  imageAlt={`Video thumbnail for ${entry.data.title}`}
-  imageWidth={entry.data.thumbnailUrl ? 1280 : undefined}
-  imageHeight={entry.data.thumbnailUrl ? 720 : undefined}
-  imageType={entry.data.thumbnailUrl ? 'image/jpeg' : undefined}
+  socialImage={entry.data.socialImage ? socialImageProps(entry.data.socialImage) : undefined}
   type="article"
   publishedAt={entry.data.publishedAt}
   modifiedAt={entry.data.updatedAt ?? entry.data.publishedAt}
@@ -114,7 +112,7 @@ const mediaStructuredData = mediaSchema({
       </div>
     </header>
 
-    {entry.data.embedUrl && entry.data.thumbnailUrl && (
+    {entry.data.embedUrl && entry.data.poster && (
       <section class="media-player-shell" aria-label={`${entry.data.title} video player`} data-reveal>
         <div
           class="media-player"
@@ -123,7 +121,14 @@ const mediaStructuredData = mediaSchema({
           data-media-title={entry.data.title}
         >
           <button class="media-player__poster" type="button" aria-label={`Play ${entry.data.title}`}>
-            <img src={entry.data.thumbnailUrl} alt="" width="1280" height="720" />
+            <MediaPicture
+              asset={entry.data.poster}
+              alt=""
+              sizes="(min-width: 900px) 82rem, calc(100vw - 2.5rem)"
+              widths={[390, 620, 768, 1024, 1280, 1600]}
+              loading="eager"
+              fetchpriority="high"
+            />
             <span class="media-player__action">
               <span class="media-player__icon"><Icon name="ph:play-fill" aria-hidden="true" /></span>
               <span>Play {durationLabel ? `— ${durationLabel}` : 'video'}</span>

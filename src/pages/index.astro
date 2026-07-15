@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArrowLink from '../components/ArrowLink.astro';
+import MediaPicture from '../components/MediaPicture.astro';
 import { profile } from '../data/profile';
 import { FEATURED_PROJECT_IDS, homeSchema, latestDate } from '../lib/seo';
 
@@ -84,7 +85,12 @@ const heroFocus = [
             </div>
             {project.data.cover && (
               <a class="featured-work__image" href={`/work/${project.id}/`} aria-label={`View ${project.data.title}`}>
-                <img src={project.data.cover} alt={project.data.coverAlt ?? ''} width="1536" height="1024" loading="lazy" />
+                <MediaPicture
+                  asset={project.data.cover}
+                  alt=""
+                  sizes="(min-width: 900px) 21rem, calc(100vw - 2.5rem)"
+                  widths={[390, 620, 768]}
+                />
               </a>
             )}
           </article>
@@ -146,7 +152,11 @@ const heroFocus = [
     <div class="beyond-work__grid">
       {profile.interests.map((interest) => (
         <article data-reveal>
-          <img src={interest.image} alt={interest.imageAlt} width="1536" height="1024" loading="lazy" />
+          <MediaPicture
+            asset={interest.media}
+            sizes="(min-width: 900px) 25rem, 50vw"
+            widths={[320, 480, 620, 768]}
+          />
           <h3>{interest.title}</h3>
           <p>{interest.description}</p>
         </article>

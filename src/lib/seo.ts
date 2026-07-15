@@ -1,4 +1,5 @@
 import { profile } from '../data/profile';
+import portraitImage from '../assets/media/personal/vivek-maswadkar-portrait.webp';
 
 export type JsonLdNode = Record<string, unknown>;
 export type JsonLdSchema = JsonLdNode | JsonLdNode[];
@@ -16,20 +17,46 @@ export type SocialImage = {
   type: string;
 };
 
+export type ImageMetadataLike = {
+  src: string;
+  width: number;
+  height: number;
+  format: string;
+};
+
+export type MediaAssetLike = {
+  src: ImageMetadataLike;
+  alt: string;
+  caption?: string;
+  credit?: string;
+};
+
+export type ImageInput = MediaAssetLike | ImageMetadataLike | string;
+
+export type NormalizedImage = {
+  src: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  type?: string;
+  caption?: string;
+  credit?: string;
+};
+
 type ContentSchemaInput = {
   path: string;
   title: string;
   description: string;
   publishedAt: string;
   modifiedAt?: string;
-  image?: string;
+  image?: ImageInput;
   tags?: string[];
   externalUrls?: string[];
 };
 
 type MediaSchemaInput = ContentSchemaInput & {
   sourceUrl: string;
-  thumbnailUrl?: string;
+  thumbnail?: ImageInput;
   duration?: string;
   embedUrl?: string;
   videoMetadataVerified?: boolean;
@@ -44,6 +71,7 @@ type WebPageSchemaInput = {
 
 export const SITE_URL = profile.siteUrl;
 export const PERSON_ID = `${SITE_URL}/#vivek`;
+export const PERSON_IMAGE_ID = `${SITE_URL}/#vivek-portrait`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const FEATURED_PROJECT_IDS = ['krishi-ai', 'agentic-test-case-generator', 'deep-research-agent'] as const;
 export const DEFAULT_SOCIAL_IMAGE: SocialImage = {
@@ -56,6 +84,86 @@ export const DEFAULT_SOCIAL_IMAGE: SocialImage = {
 
 export function absoluteUrl(path: string): string {
   return new URL(path, `${SITE_URL}/`).toString();
+}
+
+export function imageMimeType(formatOrPath: string): string {
+  const value = formatOrPath.split(/[?#]/)[0]?.toLowerCase() ?? '';
+  const format = value.includes('.') ? value.split('.').at(-1) ?? value : value;
+  if (format === 'jpg' || format === 'jpeg') return 'image/jpeg';
+  if (format === 'svg') return 'image/svg+xml';
+  if (format === 'avif') return 'image/avif';
+  if (format === 'gif') return 'image/gif';
+  if (format === 'png') return 'image/png';
+  if (format === 'webp') return 'image/webp';
+  return `image/${format || 'unknown'}`;
+}
+
+export function normalizeImage(input?: ImageInput): NormalizedImage | undefined {
+  if (!input) return undefined;
+  if (typeof input === 'string') {
+    return { src: input, type: imageMimeType(input) };
+  }
+
+  if ('format' in input) {
+    return {
+      src: input.src,
+      width: input.width,
+      height: input.height,
+      type: imageMimeType(input.format),
+    };
+  }
+
+  return {
+    src: input.src.src,
+    alt: input.alt,
+    width: input.src.width,
+    height: input.src.height,
+    type: imageMimeType(input.src.format),
+    caption: input.caption,
+    credit: input.credit,
+  };
+}
+
+export function socialImageFromAsset(input: ImageInput): SocialImage | undefined {
+  const image = normalizeImage(input);
+  if (!image?.width || !image.height || !image.type) return undefined;
+  return {
+    src: image.src,
+    alt: image.alt ?? '',
+    width: image.width,
+    height: image.height,
+    type: image.type,
+  };
+}
+
+function imageObjectNode(
+  input: ImageInput | undefined,
+  id: string,
+  representativeOfPage = true,
+): JsonLdNode | undefined {
+  const image = normalizeImage(input);
+  if (!image) return undefined;
+  return {
+    '@type': 'ImageObject',
+    '@id': id,
+    url: absoluteUrl(image.src),
+    contentUrl: absoluteUrl(image.src),
+    width: image.width,
+    height: image.height,
+    encodingFormat: image.type,
+    caption: image.caption ?? image.alt,
+    creditText: image.credit,
+    representativeOfPage: representativeOfPage || undefined,
+  };
+}
+
+function personImageNode(): JsonLdNode {
+  return imageObjectNode({
+    src: portraitImage,
+    alt: 'Portrait of Vivek Maswadkar',
+    caption: 'Vivek Maswadkar',
+    credit: 'Vivek Maswadkar',
+  }, PERSON_IMAGE_ID, false) as JsonLdNode;
 }
 
 export function utcDate(value: string): Date {
@@ -76,6 +184,7 @@ export function personNode(): JsonLdNode {
     url: `${SITE_URL}/`,
     jobTitle: profile.title,
     description: profile.description,
+    image: personImageNode(),
     sameAs: profile.social.map((item) => item.href),
     homeLocation: { '@type': 'Place', name: profile.location },
     alumniOf: {
@@ -171,6 +280,7 @@ export function aboutSchema(): JsonLdNode {
       inLanguage: 'en',
       isPartOf: { '@id': WEBSITE_ID },
       mainEntity: { '@id': PERSON_ID },
+      primaryImageOfPage: { '@id': PERSON_IMAGE_ID },
     },
     personNode(),
   ]);
@@ -197,6 +307,8 @@ export function resumeSchema(): JsonLdNode {
 
 export function blogPostingSchema(input: ContentSchemaInput): JsonLdNode {
   const pageUrl = absoluteUrl(input.path);
+  const primaryImageId = `${pageUrl}#primaryimage`;
+  const primaryImage = imageObjectNode(input.image, primaryImageId);
   return schemaGraph([
     websiteNode(),
     personNode(),
@@ -212,7 +324,7 @@ export function blogPostingSchema(input: ContentSchemaInput): JsonLdNode {
       author: { '@id': PERSON_ID },
       mainEntityOfPage: { '@id': `${pageUrl}#webpage` },
       isPartOf: { '@id': WEBSITE_ID },
-      image: input.image ? absoluteUrl(input.image) : undefined,
+      image: primaryImage ? { '@id': primaryImageId } : undefined,
       keywords: input.tags?.join(', '),
       sameAs: input.externalUrls?.filter(Boolean),
     },
@@ -227,7 +339,9 @@ export function blogPostingSchema(input: ContentSchemaInput): JsonLdNode {
       inLanguage: 'en',
       isPartOf: { '@id': WEBSITE_ID },
       about: { '@id': `${pageUrl}#article` },
+      primaryImageOfPage: primaryImage ? { '@id': primaryImageId } : undefined,
     },
+    ...(primaryImage ? [primaryImage] : []),
     breadcrumbNode([
       { name: 'Home', path: '/' },
       { name: 'Writing', path: '/writing/' },
@@ -238,6 +352,8 @@ export function blogPostingSchema(input: ContentSchemaInput): JsonLdNode {
 
 export function creativeWorkSchema(input: ContentSchemaInput): JsonLdNode {
   const pageUrl = absoluteUrl(input.path);
+  const primaryImageId = `${pageUrl}#primaryimage`;
+  const primaryImage = imageObjectNode(input.image, primaryImageId);
   return schemaGraph([
     websiteNode(),
     personNode(),
@@ -254,7 +370,7 @@ export function creativeWorkSchema(input: ContentSchemaInput): JsonLdNode {
       creator: { '@id': PERSON_ID },
       mainEntityOfPage: { '@id': `${pageUrl}#webpage` },
       isPartOf: { '@id': WEBSITE_ID },
-      image: input.image ? absoluteUrl(input.image) : undefined,
+      image: primaryImage ? { '@id': primaryImageId } : undefined,
       keywords: input.tags?.join(', '),
       sameAs: input.externalUrls?.filter(Boolean),
     },
@@ -269,7 +385,9 @@ export function creativeWorkSchema(input: ContentSchemaInput): JsonLdNode {
       inLanguage: 'en',
       isPartOf: { '@id': WEBSITE_ID },
       about: { '@id': `${pageUrl}#work` },
+      primaryImageOfPage: primaryImage ? { '@id': primaryImageId } : undefined,
     },
+    ...(primaryImage ? [primaryImage] : []),
     breadcrumbNode([
       { name: 'Home', path: '/' },
       { name: 'Work', path: '/work/' },
@@ -280,15 +398,18 @@ export function creativeWorkSchema(input: ContentSchemaInput): JsonLdNode {
 
 export function mediaSchema(input: MediaSchemaInput): JsonLdNode {
   const pageUrl = absoluteUrl(input.path);
+  const thumbnail = normalizeImage(input.thumbnail);
+  const primaryImageId = `${pageUrl}#primaryimage`;
+  const primaryImage = imageObjectNode(input.thumbnail, primaryImageId);
   const hasVerifiedVideoMetadata = input.videoMetadataVerified === true
-    && Boolean(input.thumbnailUrl && input.duration && input.embedUrl);
+    && Boolean(thumbnail && input.duration && input.embedUrl);
   const mediaNode: JsonLdNode = hasVerifiedVideoMetadata
     ? {
         '@type': 'VideoObject',
         '@id': `${pageUrl}#media`,
         name: input.title,
         description: input.description,
-        thumbnailUrl: [input.thumbnailUrl],
+        thumbnailUrl: [absoluteUrl(thumbnail?.src ?? '')],
         uploadDate: input.publishedAt,
         dateModified: input.modifiedAt ?? input.publishedAt,
         duration: input.duration,
@@ -299,6 +420,7 @@ export function mediaSchema(input: MediaSchemaInput): JsonLdNode {
         mainEntityOfPage: { '@id': `${pageUrl}#webpage` },
         isPartOf: { '@id': WEBSITE_ID },
         inLanguage: 'en',
+        image: primaryImage ? { '@id': primaryImageId } : undefined,
       }
     : {
         '@type': 'CreativeWork',
@@ -314,6 +436,7 @@ export function mediaSchema(input: MediaSchemaInput): JsonLdNode {
         isPartOf: { '@id': WEBSITE_ID },
         inLanguage: 'en',
         keywords: input.tags?.join(', '),
+        image: primaryImage ? { '@id': primaryImageId } : undefined,
       };
 
   return schemaGraph([
@@ -331,7 +454,9 @@ export function mediaSchema(input: MediaSchemaInput): JsonLdNode {
       inLanguage: 'en',
       isPartOf: { '@id': WEBSITE_ID },
       about: { '@id': `${pageUrl}#media` },
+      primaryImageOfPage: primaryImage ? { '@id': primaryImageId } : undefined,
     },
+    ...(primaryImage ? [primaryImage] : []),
     breadcrumbNode([
       { name: 'Home', path: '/' },
       { name: 'Media', path: '/media/' },

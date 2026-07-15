@@ -3,6 +3,8 @@ import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
 import { profile } from '../data/profile';
+import contactSocialImage from '../assets/media/social/contact-vivek-social.webp';
+import { socialImageProps } from '../lib/media';
 
 const linkedIn = profile.social.find((item) => item.label === 'LinkedIn');
 ---
@@ -10,6 +12,8 @@ const linkedIn = profile.social.find((item) => item.label === 'LinkedIn');
 <BaseLayout
   title="Contact Vivek Maswadkar"
   description="Start a professional conversation with Vivek Maswadkar through LinkedIn, GitHub, YouTube, or X."
+  modifiedAt={profile.updatedAt}
+  socialImage={socialImageProps({ src: contactSocialImage, alt: 'Contact Vivek Maswadkar for AI engineering, product, and teaching conversations' })}
 >
   <PageIntro
     number="05"
