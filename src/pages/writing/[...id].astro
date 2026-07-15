@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { profile } from '../../data/profile';
+import { blogPostingSchema, utcDate } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('posts', ({ data }) => !data.draft);
@@ -15,38 +16,85 @@ interface Props {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: entry.data.title,
+const path = `/writing/${entry.id}/`;
+const articleSchema = blogPostingSchema({
+  path,
+  title: entry.data.title,
   description: entry.data.description,
-  datePublished: entry.data.publishedAt,
-  dateModified: entry.data.updatedAt ?? entry.data.publishedAt,
-  author: { '@type': 'Person', '@id': `${profile.siteUrl}/#vivek`, name: profile.name },
-  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site ?? profile.siteUrl).toString(),
-  image: entry.data.cover ? new URL(entry.data.cover, Astro.site ?? profile.siteUrl).toString() : undefined,
-  sameAs: entry.data.externalUrl,
-};
-const formatter = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'long', year: 'numeric' });
+  publishedAt: entry.data.publishedAt,
+  modifiedAt: entry.data.updatedAt,
+  image: entry.data.cover,
+  tags: entry.data.tags,
+  externalUrls: entry.data.externalUrl ? [entry.data.externalUrl] : undefined,
+});
+const formatter = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const modifiedAt = entry.data.updatedAt ?? entry.data.publishedAt;
+const entryTags = new Set(entry.data.tags.map((tag) => tag.toLocaleLowerCase('en')));
+const sharedTagCount = (tags: string[]) => tags.filter((tag) => entryTags.has(tag.toLocaleLowerCase('en'))).length;
+const [allProjects, allPosts, allMedia] = await Promise.all([
+  getCollection('projects', ({ data }) => !data.draft),
+  getCollection('posts', ({ data }) => !data.draft),
+  getCollection('media', ({ data }) => !data.draft && data.type !== 'channel'),
+]);
+const relatedItems = [
+  ...allProjects.map((item) => ({
+    title: item.data.title,
+    kind: 'Project',
+    href: `/work/${item.id}/`,
+    publishedAt: item.data.publishedAt,
+    score: sharedTagCount(item.data.tags),
+  })),
+  ...allPosts
+    .filter((item) => item.id !== entry.id)
+    .map((item) => ({
+      title: item.data.title,
+      kind: 'Writing',
+      href: `/writing/${item.id}/`,
+      publishedAt: item.data.publishedAt,
+      score: sharedTagCount(item.data.tags),
+    })),
+  ...allMedia.map((item) => ({
+    title: item.data.title,
+    kind: item.data.type === 'video' ? 'Video' : 'Talk',
+    href: `/media/${item.id}/`,
+    publishedAt: item.data.publishedAt,
+    score: sharedTagCount(item.data.tags),
+  })),
+]
+  .filter((item) => item.score > 0)
+  .sort((a, b) => b.score - a.score || Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
+  .slice(0, 6);
 ---
 
 <BaseLayout
   title={entry.data.title}
   description={entry.data.description}
-  image={entry.data.cover}
   type="article"
   publishedAt={entry.data.publishedAt}
-  articleSchema={articleSchema}
+  modifiedAt={entry.data.updatedAt ?? entry.data.publishedAt}
+  schema={articleSchema}
 >
   <article class="detail-page detail-page--article">
     <header class="detail-hero">
       <div class="detail-hero__inner" data-reveal>
-        <p class="eyebrow">02 Thinking / Essay</p>
+        <nav class="eyebrow" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span>
+          <a href="/writing/">Writing</a> <span aria-hidden="true">/</span>
+          <span aria-current="page">{entry.data.title}</span>
+        </nav>
         <h1>{entry.data.title}</h1>
         <p class="detail-hero__description">{entry.data.description}</p>
         <p class="article-byline">
-          {formatter.format(new Date(`${entry.data.publishedAt}T00:00:00`))}
-          {entry.data.readingTime && <> · {entry.data.readingTime}</>}
+          By <a href="/about/" rel="author">{profile.name}</a>
+          <span aria-hidden="true"> · </span>
+          Published <time datetime={entry.data.publishedAt}>{formatter.format(utcDate(entry.data.publishedAt))}</time>
+          {entry.data.updatedAt && (
+            <>
+              <span aria-hidden="true"> · </span>
+              Updated <time datetime={modifiedAt}>{formatter.format(utcDate(modifiedAt))}</time>
+            </>
+          )}
+          {entry.data.readingTime && <><span aria-hidden="true"> · </span>{entry.data.readingTime}</>}
         </p>
         {entry.data.externalUrl && (
           <div class="detail-actions">
@@ -65,6 +113,22 @@ const formatter = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'long',
     <div class="prose" data-reveal>
       <Content />
     </div>
+    {relatedItems.length > 0 && (
+      <aside class="related-content" aria-labelledby="related-content-title" data-reveal>
+        <header>
+          <p class="eyebrow">Related threads</p>
+          <h2 id="related-content-title">Continue exploring.</h2>
+        </header>
+        <div class="related-content__grid">
+          {relatedItems.map((item) => (
+            <article>
+              <p>{item.kind}</p>
+              <h3><a href={item.href}>{item.title}</a></h3>
+            </article>
+          ))}
+        </div>
+      </aside>
+    )}
     <nav class="detail-next" aria-label="Writing navigation">
       <a href="/writing/"><Icon name="ph:arrow-left" aria-hidden="true" /> Back to all writing</a>
       <a href="/contact/">Continue the conversation <Icon name="ph:arrow-right" aria-hidden="true" /></a>

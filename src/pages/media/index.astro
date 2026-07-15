@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import { latestDate } from '../../lib/seo';
+
+const entries = (await getCollection('media', ({ data }) => !data.draft)).sort(
+  (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
+);
+const mediaEntries = entries.filter(({ data }) => data.type !== 'channel');
+const channelEntries = entries.filter(({ data }) => data.type === 'channel');
+const lastModified = latestDate(entries.map((entry) => entry.data.updatedAt ?? entry.data.publishedAt));
+const formatter = new Intl.DateTimeFormat('en', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const typeLabel = (type: 'video' | 'talk' | 'appearance' | 'channel') =>
+  type === 'video' ? 'Video' : type === 'talk' ? 'Talk' : type === 'appearance' ? 'Appearance' : 'Channel';
+const formatDuration = (duration?: string) => {
+  if (!duration) return undefined;
+  const match = duration.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(\d+)S$/);
+  if (!match) return undefined;
+  const [, hours, minutes = '0', seconds] = match;
+  return hours
+    ? `${hours}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`
+    : `${minutes}:${seconds.padStart(2, '0')}`;
+};
+---
+
+<BaseLayout
+  title="Practical AI Talks & Videos"
+  description="Talks, product walkthroughs, and practical AI videos by Vivek Maswadkar."
+  modifiedAt={lastModified}
+>
+  <PageIntro
+    number="02"
+    chapter="Thinking / Media"
+    title="Ideas, demonstrated in public."
+    description="Talks, walkthroughs, and practical lessons from building AI products—kept close to the work they came from."
+  />
+
+  <section class="media-archive" aria-labelledby="media-archive-heading">
+    <div class="media-archive__inner">
+      <h2 id="media-archive-heading" class="visually-hidden">Talks, videos, and appearances</h2>
+      <div class="media-records">
+        {mediaEntries.map((entry, index) => {
+          const href = `/media/${entry.id}/`;
+          const duration = formatDuration(entry.data.duration);
+          return (
+            <article class="media-record" data-reveal>
+              <a class="media-record__visual" href={href} aria-label={`Open ${entry.data.title}`}>
+                {entry.data.thumbnailUrl ? (
+                  <img
+                    src={entry.data.thumbnailUrl}
+                    alt=""
+                    width="1280"
+                    height="720"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                  />
+                ) : (
+                  <span class="media-record__placeholder" aria-hidden="true"><Icon name="ph:waveform" /></span>
+                )}
+                <span class="media-record__play" aria-hidden="true"><Icon name="ph:play-fill" /></span>
+              </a>
+
+              <p class="media-record__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</p>
+
+              <div class="media-record__copy">
+                <p class="media-record__meta">
+                  <time datetime={entry.data.publishedAt}>
+                    {formatter.format(new Date(`${entry.data.publishedAt}T00:00:00Z`))}
+                  </time>
+                  <span aria-hidden="true">·</span>
+                  <span>{typeLabel(entry.data.type)}</span>
+                  {duration && <><span aria-hidden="true">·</span><span>{duration}</span></>}
+                </p>
+                <h2><a href={href}>{entry.data.title}</a></h2>
+                <p>{entry.data.description}</p>
+                <div class="tag-list">{entry.data.tags.map((tag) => <span>{tag}</span>)}</div>
+              </div>
+
+              <a class="media-record__arrow" href={href} aria-label={`Open ${entry.data.title}`}>
+                <Icon name="ph:arrow-up-right" aria-hidden="true" />
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  {channelEntries.length > 0 && (
+    <section class="media-channels" aria-labelledby="media-channels-heading">
+      <div class="media-channels__inner">
+        <header>
+          <p class="eyebrow">Watch elsewhere</p>
+          <h2 id="media-channels-heading">Channels & recurring series</h2>
+        </header>
+        <div class="media-channel-list">
+          {channelEntries.map((entry) => (
+            <a href={entry.data.url} target="_blank" rel="me noopener noreferrer" data-reveal>
+              <Icon name="ph:youtube-logo" aria-hidden="true" />
+              <span>
+                <strong>{entry.data.title}</strong>
+                <small>{entry.data.description}</small>
+              </span>
+              <Icon name="ph:arrow-up-right" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>

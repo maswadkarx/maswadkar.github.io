@@ -2,6 +2,7 @@
 title: "A personal home for the whole story"
 description: "A chapter-led portfolio that brings projects, writing, aspirations, and public channels into one evolving place."
 publishedAt: "2026-07-14"
+updatedAt: "2026-07-15"
 featured: false
 draft: false
 cover: "/images/dossier/hero-geometric.webp"
@@ -12,7 +13,7 @@ status: "In progress"
 sourceUrl: "https://github.com/maswadkarx/maswadkarx.github.io"
 ---
 
-This site began with a simple requirement: make one public place broad enough to hold a professional portfolio and human enough to feel like a real person lives behind it.
+This portfolio is a static, chapter-led public home for my work, writing, current direction, résumé, media, and verified public profiles. It is designed to give people—and standards-compliant search and AI crawlers—one canonical place to understand the whole story.
 
 ## The problem
 
@@ -24,6 +25,14 @@ The homepage uses five chapters—Making, Thinking, Becoming, Living, and Connec
 
 The content system is intentionally truth-first. Draft entries stay out of production, optional sections disappear when their source material is missing, and generated imagery is treated as editorial atmosphere rather than documentary evidence.
 
+I directed and implemented the site in Astro with typed content collections and static HTML routes. The discoverability layer includes canonical URLs, public sitemaps with content-based modification dates, RSS, structured data, social metadata, a human-readable `llms.txt`, and a crawler policy that allows legitimate public indexing.
+
 ## The content pass
 
-The portfolio now brings together public work, writing, a professional timeline, current direction, and verified channels. Source material is drawn from public profiles and project repositories; uncertain details remain unpublished until they can be confirmed.
+The portfolio now brings together public work, first-party writing, a professional timeline, current direction, media, and verified channels. Source material is drawn from public profiles and project repositories; uncertain details remain unpublished until they can be confirmed.
+
+The [public repository](https://github.com/maswadkarx/maswadkarx.github.io) contains the site and its deployment configuration. Automated checks verify metadata, sitemap coverage, structured data, internal links, the 404 response, and public discovery files before deployment.
+
+## Limitations and current status
+
+This is an evolving personal publication, not a CMS or a complete autobiography. It intentionally has no visitor analytics, newsletter, contact-form backend, or fabricated placeholder content. Search indexing, rankings, and AI citations are controlled by external systems and cannot be guaranteed; the site can only make its content accessible, consistent, and verifiable.

@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Icon } from 'astro-icon/components';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { creativeWorkSchema, utcDate } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const entries = await getCollection('projects', ({ data }) => !data.draft);
@@ -14,20 +15,81 @@ interface Props {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const path = `/work/${entry.id}/`;
+const seoTitle = entry.id === 'krishi-ai' ? 'Krishi AI — Multilingual AI Farming Assistant' : entry.data.title;
+const lastVerified = entry.data.updatedAt ?? entry.data.publishedAt;
+const formatter = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const entryTags = new Set(entry.data.tags.map((tag) => tag.toLocaleLowerCase('en')));
+const sharedTagCount = (tags: string[]) => tags.filter((tag) => entryTags.has(tag.toLocaleLowerCase('en'))).length;
+const [allProjects, allPosts, allMedia] = await Promise.all([
+  getCollection('projects', ({ data }) => !data.draft),
+  getCollection('posts', ({ data }) => !data.draft),
+  getCollection('media', ({ data }) => !data.draft && data.type !== 'channel'),
+]);
+const relatedItems = [
+  ...allProjects
+    .filter((item) => item.id !== entry.id)
+    .map((item) => ({
+      title: item.data.title,
+      kind: 'Project',
+      href: `/work/${item.id}/`,
+      publishedAt: item.data.publishedAt,
+      score: sharedTagCount(item.data.tags),
+    })),
+  ...allPosts.map((item) => ({
+    title: item.data.title,
+    kind: 'Writing',
+    href: `/writing/${item.id}/`,
+    publishedAt: item.data.publishedAt,
+    score: sharedTagCount(item.data.tags),
+  })),
+  ...allMedia.map((item) => ({
+    title: item.data.title,
+    kind: item.data.type === 'video' ? 'Video' : 'Talk',
+    href: `/media/${item.id}/`,
+    publishedAt: item.data.publishedAt,
+    score: sharedTagCount(item.data.tags),
+  })),
+]
+  .filter((item) => item.score > 0)
+  .sort((a, b) => b.score - a.score || Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
+  .slice(0, 6);
+const projectSchema = creativeWorkSchema({
+  path,
+  title: entry.data.title,
+  description: entry.data.description,
+  publishedAt: entry.data.publishedAt,
+  modifiedAt: entry.data.updatedAt,
+  image: entry.data.cover,
+  tags: entry.data.tags,
+  externalUrls: [entry.data.liveUrl, entry.data.sourceUrl].filter((url): url is string => Boolean(url)),
+});
 ---
 
-<BaseLayout title={entry.data.title} description={entry.data.description} image={entry.data.cover}>
+<BaseLayout
+  title={seoTitle}
+  description={entry.data.description}
+  publishedAt={entry.data.publishedAt}
+  modifiedAt={lastVerified}
+  schema={projectSchema}
+>
   <article class="detail-page">
     <header class="detail-hero">
       <div class="detail-hero__inner" data-reveal>
-        <p class="eyebrow">01 Making / Project</p>
+        <nav class="eyebrow" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span>
+          <a href="/work/">Work</a> <span aria-hidden="true">/</span>
+          <span aria-current="page">{entry.data.title}</span>
+        </nav>
         <h1>{entry.data.title}</h1>
         <p class="detail-hero__description">{entry.data.description}</p>
         <dl class="detail-meta">
           {entry.data.role && <div><dt>Role</dt><dd>{entry.data.role}</dd></div>}
           {entry.data.status && <div><dt>Status</dt><dd>{entry.data.status}</dd></div>}
           {entry.data.startedAt && <div><dt>Started</dt><dd>{entry.data.startedAt}</dd></div>}
-          {!entry.data.startedAt && <div><dt>Public since</dt><dd>{new Date(`${entry.data.publishedAt}T00:00:00`).getFullYear()}</dd></div>}
+          <div><dt>Published</dt><dd><time datetime={entry.data.publishedAt}>{formatter.format(utcDate(entry.data.publishedAt))}</time></dd></div>
+          <div><dt>Last verified</dt><dd><time datetime={lastVerified}>{formatter.format(utcDate(lastVerified))}</time></dd></div>
+          {entry.data.tags.length > 0 && <div><dt>Topics</dt><dd>{entry.data.tags.join(' · ')}</dd></div>}
         </dl>
         <div class="detail-actions">
           {entry.data.liveUrl && <a class="button button--coral" href={entry.data.liveUrl} target="_blank" rel="noopener noreferrer">Visit project <Icon name="ph:arrow-up-right" /></a>}
@@ -43,6 +105,22 @@ const { Content } = await render(entry);
     <div class="prose" data-reveal>
       <Content />
     </div>
+    {relatedItems.length > 0 && (
+      <aside class="related-content" aria-labelledby="related-content-title" data-reveal>
+        <header>
+          <p class="eyebrow">Related threads</p>
+          <h2 id="related-content-title">Continue exploring.</h2>
+        </header>
+        <div class="related-content__grid">
+          {relatedItems.map((item) => (
+            <article>
+              <p>{item.kind}</p>
+              <h3><a href={item.href}>{item.title}</a></h3>
+            </article>
+          ))}
+        </div>
+      </aside>
+    )}
     <nav class="detail-next" aria-label="Project navigation">
       <a href="/work/"><Icon name="ph:arrow-left" aria-hidden="true" /> Back to all work</a>
       <a href="/contact/">Start a conversation <Icon name="ph:arrow-right" aria-hidden="true" /></a>

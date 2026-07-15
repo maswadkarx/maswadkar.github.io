@@ -42,6 +42,30 @@ const media = defineCollection({
     ...common,
     type: z.enum(['video', 'talk', 'appearance', 'channel']),
     url: z.url(),
+    thumbnailUrl: z.url().optional(),
+    duration: z.string().regex(/^PT(?:\d+H)?(?:\d+M)?\d+S$/).optional(),
+    embedUrl: z.url().optional(),
+    videoMetadataVerified: z.boolean().default(false),
+  }).superRefine((data, context) => {
+    if (!data.videoMetadataVerified) return;
+
+    if (data.type === 'channel') {
+      context.addIssue({
+        code: 'custom',
+        path: ['videoMetadataVerified'],
+        message: 'Channel entries cannot be published as VideoObject metadata.',
+      });
+    }
+
+    for (const field of ['thumbnailUrl', 'duration', 'embedUrl'] as const) {
+      if (!data[field]) {
+        context.addIssue({
+          code: 'custom',
+          path: [field],
+          message: `${field} is required when videoMetadataVerified is true.`,
+        });
+      }
+    }
   }),
 });
 

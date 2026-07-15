@@ -3,9 +3,15 @@ import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
 import { profile } from '../data/profile';
+import { resumeSchema } from '../lib/seo';
 ---
 
-<BaseLayout title="Résumé" description="The professional experience, skills, education, and credentials of Vivek Maswadkar.">
+<BaseLayout
+  title="Résumé"
+  description="The professional experience, skills, education, and credentials of Vivek Maswadkar."
+  modifiedAt={profile.updatedAt}
+  schema={resumeSchema()}
+>
   <PageIntro
     number="R"
     chapter="Résumé"

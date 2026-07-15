@@ -4,6 +4,7 @@ import { Icon } from 'astro-icon/components';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArrowLink from '../components/ArrowLink.astro';
 import { profile } from '../data/profile';
+import { FEATURED_PROJECT_IDS, homeSchema, latestDate } from '../lib/seo';
 
 const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
   (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
@@ -12,11 +13,15 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
 );
 
-const projectOrder = ['krishi-ai', 'agentic-test-case-generator', 'deep-research-agent'];
-const featuredProjects = projectOrder
+const featuredProjects = FEATURED_PROJECT_IDS
   .map((id) => projects.find((project) => project.id === id))
   .filter((project) => project !== undefined);
 const latestPosts = posts.slice(0, 3);
+const homeLastmod = latestDate([
+  profile.updatedAt,
+  ...featuredProjects.map((entry) => entry.data.updatedAt ?? entry.data.publishedAt),
+  ...latestPosts.map((entry) => entry.data.updatedAt ?? entry.data.publishedAt),
+]);
 const formatDate = (date: string) => new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short' }).format(new Date(`${date}T00:00:00`));
 const heroFocus = [
   'Building Krishi AI as a practical, multilingual farming companion.',
@@ -25,7 +30,13 @@ const heroFocus = [
 ];
 ---
 
-<BaseLayout compactFooter={true}>
+<BaseLayout
+  title="Vivek Maswadkar — AI/ML Engineer & Product Builder in Zürich"
+  description={profile.description}
+  modifiedAt={homeLastmod}
+  schema={homeSchema(homeLastmod)}
+  compactFooter={true}
+>
   <section class="dossier-hero">
     <div class="dossier-hero__inner">
       <div class="dossier-hero__copy" data-reveal data-visible="true">
@@ -129,30 +140,17 @@ const heroFocus = [
     <div class="beyond-work__intro" data-reveal>
       <p class="eyebrow">Beyond work</p>
       <h2>Curious by nature.<br />Builder at heart.</h2>
-      <p>Outside the screen, I recharge through ideas, observation, and places that expand the mind.</p>
+      <p>Outside the screen, my farming roots and a habit of teaching keep the work connected to people and purpose.</p>
       <ArrowLink href="/about/" label="More about me" />
     </div>
     <div class="beyond-work__grid">
-      <article data-reveal>
-        <img src="/images/dossier/reading-ideas.webp" alt="Expressive black brush marks on ivory paper" width="1024" height="1024" loading="lazy" />
-        <h3>Reading & ideas</h3>
-        <p>Books, essays, and notes that shape how I think.</p>
-      </article>
-      <article data-reveal>
-        <img src="/images/dossier/writing-pen.webp" alt="Black fountain pen on a pale editorial surface" width="1024" height="1024" loading="lazy" />
-        <h3>Writing</h3>
-        <p>Turning ideas into words to learn and to share.</p>
-      </article>
-      <article data-reveal>
-        <img src="/images/dossier/photography-camera.webp" alt="Vintage analog camera in monochrome light" width="1024" height="1024" loading="lazy" />
-        <h3>Photography</h3>
-        <p>Finding patterns, light, and perspective.</p>
-      </article>
-      <article data-reveal>
-        <img src="/images/dossier/exploration-water.webp" alt="A small figure in an expansive ultramarine landscape" width="1024" height="1024" loading="lazy" />
-        <h3>Exploration</h3>
-        <p>New places, new questions, new lenses.</p>
-      </article>
+      {profile.interests.map((interest) => (
+        <article data-reveal>
+          <img src={interest.image} alt={interest.imageAlt} width="1536" height="1024" loading="lazy" />
+          <h3>{interest.title}</h3>
+          <p>{interest.description}</p>
+        </article>
+      ))}
     </div>
   </section>
 </BaseLayout>

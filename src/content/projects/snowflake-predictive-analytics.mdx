@@ -1,8 +1,8 @@
 ---
 title: "Snowflake Predictive Analytics Agent"
-description: "A portable analytics system for forecasting Snowflake usage, surfacing cost signals, and monitoring results without external service dependencies."
+description: "A portable Python system that connects to Snowflake to forecast usage, surface cost signals, and monitor results with local persistence."
 publishedAt: "2025-07-14"
-updatedAt: "2025-08-06"
+updatedAt: "2026-07-15"
 featured: false
 draft: false
 cover: "/images/dossier/project-orbit.webp"
@@ -13,12 +13,26 @@ status: "Complete"
 sourceUrl: "https://github.com/lumensparkxy/predictive_analysis_agent"
 ---
 
-The Snowflake Predictive Analytics Agent is a self-contained Python system for usage forecasting and cost optimisation.
+The Snowflake Predictive Analytics Agent connects to a user’s Snowflake account to forecast usage, surface cost signals, and monitor results while keeping its own persistence local.
 
-## Portable by design
+## Problem and intended users
+
+Snowflake platform and FinOps teams need enough history and visibility to anticipate usage changes, investigate cost signals, and act before a surprise appears on the bill. Smaller teams may not want another database or managed platform just to operate that workflow.
+
+## My role and contribution
+
+I created and developed the project, including the data collection, local persistence model, forecasting workflow, monitoring and alerts, API, reports, and developer setup.
+
+## Approach and technology
 
 The application uses SQLite, JSON, Parquet, and a file-based cache rather than requiring additional hosted services. It collects Snowflake data, processes it with pandas and NumPy, trains scikit-learn models, and presents forecasts, monitoring, alerts, and reports through a FastAPI-backed interface.
 
-## What the project tests
+The repository is structured for a conventional Python workflow with installation, testing, linting, and a one-command local start. That small operational footprint is part of the experiment, not just an implementation detail.
 
-Analytics tooling is easier to adopt when its operational footprint is small. This project explores how far a useful monitoring and forecasting workflow can go with a one-command setup, explicit local storage, and a conventional Python test and linting toolchain.
+## Evidence and current outcome
+
+The [public source repository](https://github.com/lumensparkxy/predictive_analysis_agent) contains the application and setup documentation. It demonstrates a working forecasting and monitoring path. I do not publish verified savings, forecast-accuracy benchmarks, or production-scale results, so none is claimed here.
+
+## Limitations and status
+
+The system requires access to the user’s Snowflake account and enough representative history to train useful forecasts. Predictions inherit the limits of that data and should support—not replace—cost investigation and operational judgment. The project is complete as a standalone implementation rather than offered as a managed service.

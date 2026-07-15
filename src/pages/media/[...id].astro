@@ -1,0 +1,219 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { mediaSchema } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('media', ({ data }) => !data.draft && data.type !== 'channel');
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'media'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const formatter = new Intl.DateTimeFormat('en', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const typeLabel = entry.data.type === 'video'
+  ? 'Video'
+  : entry.data.type === 'talk'
+    ? 'Talk'
+    : 'Appearance';
+const formatDuration = (duration?: string) => {
+  if (!duration) return undefined;
+  const match = duration.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(\d+)S$/);
+  if (!match) return undefined;
+  const [, hours, minutes = '0', seconds] = match;
+  return hours
+    ? `${hours}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`
+    : `${minutes}:${seconds.padStart(2, '0')}`;
+};
+const durationLabel = formatDuration(entry.data.duration);
+const lastVerified = entry.data.updatedAt ?? entry.data.publishedAt;
+const sourceUrl = new URL(entry.data.url);
+const isYouTubeSource = sourceUrl.hostname === 'youtu.be' || sourceUrl.hostname.endsWith('youtube.com');
+const sourceAction = isYouTubeSource ? 'Watch on YouTube' : 'View the original source';
+const entryTags = new Set(entry.data.tags.map((tag) => tag.toLocaleLowerCase('en')));
+const sharedTagCount = (tags: string[]) =>
+  tags.reduce((count, tag) => count + Number(entryTags.has(tag.toLocaleLowerCase('en'))), 0);
+const sortRelated = <T extends { data: { tags: string[]; publishedAt: string } }>(items: T[]) =>
+  items.sort((a, b) =>
+    sharedTagCount(b.data.tags) - sharedTagCount(a.data.tags)
+    || Date.parse(b.data.publishedAt) - Date.parse(a.data.publishedAt),
+  ).slice(0, 3);
+const [relatedProjects, relatedPosts, relatedMedia] = await Promise.all([
+  getCollection('projects', ({ data }) => !data.draft && sharedTagCount(data.tags) > 0).then(sortRelated),
+  getCollection('posts', ({ data }) => !data.draft && sharedTagCount(data.tags) > 0).then(sortRelated),
+  getCollection(
+    'media',
+    ({ id, data }) => id !== entry.id && !data.draft && sharedTagCount(data.tags) > 0,
+  ).then(sortRelated),
+]);
+const mediaStructuredData = mediaSchema({
+  path: Astro.url.pathname,
+  title: entry.data.title,
+  description: entry.data.description,
+  publishedAt: entry.data.publishedAt,
+  modifiedAt: entry.data.updatedAt,
+  tags: entry.data.tags,
+  sourceUrl: entry.data.url,
+  thumbnailUrl: entry.data.thumbnailUrl,
+  duration: entry.data.duration,
+  embedUrl: entry.data.embedUrl,
+  videoMetadataVerified: entry.data.videoMetadataVerified,
+});
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  image={entry.data.thumbnailUrl}
+  imageAlt={`Video thumbnail for ${entry.data.title}`}
+  imageWidth={entry.data.thumbnailUrl ? 1280 : undefined}
+  imageHeight={entry.data.thumbnailUrl ? 720 : undefined}
+  imageType={entry.data.thumbnailUrl ? 'image/jpeg' : undefined}
+  type="article"
+  publishedAt={entry.data.publishedAt}
+  modifiedAt={entry.data.updatedAt ?? entry.data.publishedAt}
+  schema={mediaStructuredData}
+>
+  <article class="media-detail">
+    <header class="detail-hero">
+      <div class="detail-hero__inner" data-reveal>
+        <nav class="eyebrow" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span>
+          <a href="/media/">Media</a> <span aria-hidden="true">/</span>
+          <span aria-current="page">{entry.data.title}</span>
+        </nav>
+        <h1>{entry.data.title}</h1>
+        <p class="detail-hero__description">{entry.data.description}</p>
+        <dl class="detail-meta">
+          <div>
+            <dt>Published</dt>
+            <dd><time datetime={entry.data.publishedAt}>{formatter.format(new Date(`${entry.data.publishedAt}T00:00:00Z`))}</time></dd>
+          </div>
+          <div>
+            <dt>Last verified</dt>
+            <dd><time datetime={lastVerified}>{formatter.format(new Date(`${lastVerified}T00:00:00Z`))}</time></dd>
+          </div>
+          <div><dt>Format</dt><dd>{typeLabel}</dd></div>
+          {durationLabel && <div><dt>Duration</dt><dd>{durationLabel}</dd></div>}
+        </dl>
+        <div class="detail-actions">
+          <a class="button button--coral" href={entry.data.url} target="_blank" rel="noopener noreferrer">
+            {sourceAction} <Icon name="ph:arrow-up-right" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    {entry.data.embedUrl && entry.data.thumbnailUrl && (
+      <section class="media-player-shell" aria-label={`${entry.data.title} video player`} data-reveal>
+        <div
+          class="media-player"
+          data-media-player
+          data-embed-url={entry.data.embedUrl}
+          data-media-title={entry.data.title}
+        >
+          <button class="media-player__poster" type="button" aria-label={`Play ${entry.data.title}`}>
+            <img src={entry.data.thumbnailUrl} alt="" width="1280" height="720" />
+            <span class="media-player__action">
+              <span class="media-player__icon"><Icon name="ph:play-fill" aria-hidden="true" /></span>
+              <span>Play {durationLabel ? `— ${durationLabel}` : 'video'}</span>
+            </span>
+          </button>
+          <noscript>
+            <p><a href={entry.data.url}>Watch {entry.data.title} on YouTube</a>.</p>
+          </noscript>
+        </div>
+        <p class="media-player-shell__note">YouTube loads only after you press play.</p>
+      </section>
+    )}
+
+    <div class="prose media-detail__prose" data-reveal>
+      <Content />
+      <p class="media-detail__source">
+        <strong>Source</strong>
+        <a href={entry.data.url} target="_blank" rel="noopener noreferrer">
+          {sourceAction} <Icon name="ph:arrow-up-right" aria-hidden="true" />
+        </a>
+      </p>
+    </div>
+
+    {(relatedProjects.length > 0 || relatedPosts.length > 0 || relatedMedia.length > 0) && (
+      <aside class="related-content" aria-labelledby="related-content-heading" data-reveal>
+        <header>
+          <p class="eyebrow">Follow the thread</p>
+          <h2 id="related-content-heading">Related work, writing & media</h2>
+        </header>
+        <div class="related-content__grid">
+          {relatedProjects.map((project) => (
+            <article>
+              <p>Work</p>
+              <h3><a href={`/work/${project.id}/`}>{project.data.title}</a></h3>
+              <span>{project.data.description}</span>
+            </article>
+          ))}
+          {relatedPosts.map((post) => (
+            <article>
+              <p>Writing</p>
+              <h3><a href={`/writing/${post.id}/`}>{post.data.title}</a></h3>
+              <span>{post.data.description}</span>
+            </article>
+          ))}
+          {relatedMedia.map((media) => (
+            <article>
+              <p>Media</p>
+              <h3>
+                {media.data.type === 'channel' ? (
+                  <a href={media.data.url} target="_blank" rel="noopener noreferrer">{media.data.title}</a>
+                ) : (
+                  <a href={`/media/${media.id}/`}>{media.data.title}</a>
+                )}
+              </h3>
+              <span>{media.data.description}</span>
+            </article>
+          ))}
+        </div>
+      </aside>
+    )}
+
+    <nav class="detail-next" aria-label="Media navigation">
+      <a href="/media/"><Icon name="ph:arrow-left" aria-hidden="true" /> Back to all media</a>
+      <a href="/contact/">Continue the conversation <Icon name="ph:arrow-right" aria-hidden="true" /></a>
+    </nav>
+  </article>
+
+  <script>
+    document.querySelectorAll<HTMLElement>('[data-media-player]').forEach((player) => {
+      const button = player.querySelector<HTMLButtonElement>('.media-player__poster');
+      if (!button) return;
+
+      button.addEventListener('click', () => {
+        const embedUrl = player.dataset.embedUrl;
+        if (!embedUrl) return;
+
+        const url = new URL(embedUrl);
+        url.searchParams.set('autoplay', '1');
+        url.searchParams.set('rel', '0');
+
+        const iframe = document.createElement('iframe');
+        iframe.src = url.toString();
+        iframe.title = player.dataset.mediaTitle ?? 'YouTube video';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        iframe.allowFullscreen = true;
+
+        player.replaceChildren(iframe);
+        player.dataset.loaded = 'true';
+      }, { once: true });
+    });
+  </script>
+</BaseLayout>
